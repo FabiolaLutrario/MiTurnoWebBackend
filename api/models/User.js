@@ -1,7 +1,19 @@
 const Sequelize = require("sequelize");
+const bcrypt = require("bcrypt");
 const db = require("./db");
 
-class User extends Sequelize.Model {}
+class User extends Sequelize.Model {
+  hash(password, salt) {
+    return bcrypt.hash(password, salt);
+  }
+
+  validatePassword(password) {
+    return this.hash(password, this.salt).then(
+      (newHash) => newHash === this.password
+    );
+  }
+}
+
 User.init(
   {
     mail: {
@@ -15,7 +27,7 @@ User.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    hash: {
+    password: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -38,5 +50,15 @@ User.init(
   },
   { sequelize: db, modelName: "user" }
 );
+
+User.beforeSave((user) => {
+  const salt = bcrypt.genSaltSync();
+
+  user.salt = salt;
+
+  return user.hash(user.password, salt).then((hash) => {
+    user.password = hash;
+  });
+});
 
 module.exports = User;
