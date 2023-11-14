@@ -18,7 +18,7 @@ class UserAdminController {
   static promoteToAdmin(req, res) {
     const { id } = req.params.userId;
 
-    User.update({ rol: "Operator" }, { where: { id }, returning: true })
+    User.update({ rol: "Admin" }, { where: { id }, returning: true })
       .then(([rows, users]) => {
         res.send(users[0]);
       })
