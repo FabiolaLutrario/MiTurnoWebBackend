@@ -6,9 +6,11 @@ const User = require("../models/User");
 
 class UsersController {
   static register(req, res) {
-    const { fullName, dni, email, password, rol } = req.body;
+    const { fullName, dni, email, password, role } = req.body;
 
-    if (!fullName || !dni || !email || !password || !rol) {
+    console.log(req.body);
+
+    if (!fullName || !dni || !email || !password || !role) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
@@ -61,7 +63,7 @@ class UsersController {
   }
 
   static getSingleUser(req, res) {
-    const { id } = req.params.id;
+    const id = req.params.id;
 
     User.findOne({ where: { id } })
       .then((user) => {
@@ -87,7 +89,7 @@ class UsersController {
   }
 
   static editProlife(req, res) {
-    const { id } = req.params.userId;
+    const id = req.params.userId;
 
     User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
@@ -122,7 +124,7 @@ class UsersController {
           .save()
           .then(() => {
             //Genera el link de recuperación de contraseña y lo envía por correo
-            const restorePasswordURL = `http://localhost:3000/overwrite-password/${user.token}`;
+            const restorePasswordURL = `http://localhost:5000/overwrite-password/${user.token}`;
             const info = transporter.sendMail({
               from: '"Recuperación de contraseña" <fabiolalutrario@gmail.com>',
               to: user.email,

@@ -7,7 +7,7 @@ router.post("/login", UsersController.login);
 router.get("/me", UsersController.validateAuthUser);
 router.get("/singleUser/:id", UsersController.getSingleUser);
 router.post("/logout", UsersController.logout);
-router.put("/editProlife/:userId", UsersController.editProlife);
+router.put("/editProfile/:userId", UsersController.editProlife);
 router.put("/restore-password", UsersController.sendEmail);
 router.get(
   "/token-restore-password/:token",
