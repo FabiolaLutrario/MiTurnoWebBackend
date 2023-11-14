@@ -39,6 +39,10 @@ User.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    initialRole: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     dni: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -59,6 +63,10 @@ User.beforeSave((user) => {
   return user.hash(user.password, salt).then((hash) => {
     user.password = hash;
   });
+});
+
+User.beforeCreate((user) => {
+  return (user.initialRole = role);
 });
 
 module.exports = User;
