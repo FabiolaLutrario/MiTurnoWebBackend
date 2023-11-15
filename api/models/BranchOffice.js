@@ -8,6 +8,10 @@ BranchOffice.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
+    box: {
+      type: Sequelize.NUMBER,
+      allowNull: false,
+    },
     openingTime: {
       type: Sequelize.TIME,
       allowNull: false,
