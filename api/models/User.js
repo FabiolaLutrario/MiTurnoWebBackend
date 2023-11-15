@@ -25,7 +25,6 @@ User.init(
     },
     salt: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     password: {
       type: Sequelize.STRING,
@@ -41,7 +40,6 @@ User.init(
     },
     initialRole: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     dni: {
       type: Sequelize.INTEGER,
@@ -62,8 +60,10 @@ User.beforeValidate((user) => {
 
   return user.hash(user.password, salt).then((hash) => {
     user.password = hash;
-    user.initialRole = user.role;
   });
+});
+User.beforeCreate((user) => {
+  return (user.initialRole = user.role);
 });
 
 module.exports = User;

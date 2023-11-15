@@ -83,11 +83,11 @@ class UsersController {
 
   static logout(req, res) {
     res.clearCookie("token");
-    res.sendStatus(204);
+    res.status(204).send("Logged out");
   }
 
   static editProlife(req, res) {
-    const { id } = req.params.userId;
+    const id = req.params.userId;
 
     User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
@@ -122,7 +122,7 @@ class UsersController {
           .save()
           .then(() => {
             //Genera el link de recuperación de contraseña y lo envía por correo
-            const restorePasswordURL = `http://localhost:3000/overwrite-password/${user.token}`;
+            const restorePasswordURL = `http://localhost:5000/overwrite-password/${user.token}`;
             const info = transporter.sendMail({
               from: '"Recuperación de contraseña" <fabiolalutrario@gmail.com>',
               to: user.email,
