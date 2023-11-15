@@ -73,7 +73,7 @@ class UsersController {
           fullName: user.fullName,
           dni: user.dni,
           email: user.email,
-          rol: user.rol,
+          role: user.role,
         };
         res.send(payload);
       })
