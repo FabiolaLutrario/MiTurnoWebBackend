@@ -16,7 +16,7 @@ class User extends Sequelize.Model {
 
 User.init(
   {
-    mail: {
+    email: {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
@@ -25,7 +25,6 @@ User.init(
     },
     salt: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     password: {
       type: Sequelize.STRING,
@@ -41,7 +40,6 @@ User.init(
     },
     initialRole: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     dni: {
       type: Sequelize.INTEGER,
@@ -64,9 +62,8 @@ User.beforeSave((user) => {
     user.password = hash;
   });
 });
-
 User.beforeCreate((user) => {
-  return (user.initialRole = role);
+  return (user.initialRole = user.role);
 });
 
 module.exports = User;
