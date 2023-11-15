@@ -26,11 +26,10 @@ Turn.init(
       type: Sequelize.DATE,
       allowNull: false,
     },
-    //Hora del turno
-    startTimeTurn: {
-      type: Sequelize.TIME,
-      allowNull: false,
-    },
+
+    //Hora del turno:
+    //La va a traer desde la tabla "Horary"
+
     //Día en el cual se reservó el turno
     reservationDate: {
       type: Sequelize.DATE,
@@ -49,7 +48,6 @@ Turn.init(
     },
     confirmation: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
   },
   { sequelize: db, modelName: "turn" }
@@ -61,7 +59,7 @@ Turn.beforeCreate((turn) => {
 
 /* Al momento de guardar el turno captura la fecha y hora actual y la guarda en reservationDate y 
 reservationTime respectivamente*/
-Turn.beforeSave((turn) => {
+Turn.beforeValidate((turn) => {
   turn.reservationDate = new Date(); // Captura la fecha actual
 
   turn.reservationTime = new Date().toLocaleTimeString("es-ES", {

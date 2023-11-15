@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const bcrypt = require("bcrypt");
 const db = require("./db");
+const Role = require("./Role");
 
 class User extends Sequelize.Model {
   hash(password, salt) {
@@ -34,12 +35,21 @@ User.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    role: {
+    roleId: {
       type: Sequelize.STRING,
       allowNull: false,
+      references: {
+        model: Role,
+        key: "id",
+      },
     },
-    initialRole: {
+    initialRoleId: {
       type: Sequelize.STRING,
+      allowNull: false,
+      references: {
+        model: Role,
+        key: "id",
+      },
     },
     dni: {
       type: Sequelize.INTEGER,
@@ -53,7 +63,7 @@ User.init(
   { sequelize: db, modelName: "user" }
 );
 
-User.beforeValidate((user) => {
+User.beforeCreate((user) => {
   const salt = bcrypt.genSaltSync();
 
   user.salt = salt;
@@ -62,8 +72,8 @@ User.beforeValidate((user) => {
     user.password = hash;
   });
 });
-User.beforeCreate((user) => {
+/* User.beforeCreate((user) => {
   return (user.initialRole = user.role);
-});
+}); */
 
 module.exports = User;

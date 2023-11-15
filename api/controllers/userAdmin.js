@@ -28,7 +28,10 @@ class UserAdminController {
 
         /* Si un usuario en el que al momento de registrarlo en la base de datos inició
       con un rol Admin por defecto no se puede autorevocar su permiso de Admin*/
-        if (user.initialRole === "Admin" && req.body.rol === "Client")
+        if (
+          user.initialRoleId === "Administrador" &&
+          req.body.roleId === "Cliente"
+        )
           return res
             .status(400)
             .send(
@@ -37,7 +40,7 @@ class UserAdminController {
 
         /*       Si pasa todas las validaciones procede a promover o revocar los permisos 
       de "Admin" al usuario según sea el caso */
-        user.role = req.body.rol;
+        user.roleId = req.body.roleId;
         user.save().then(() => {
           res.status(200).send("Successful operation!");
         });

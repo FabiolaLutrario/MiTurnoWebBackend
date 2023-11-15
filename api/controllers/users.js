@@ -3,20 +3,38 @@ const { validateAuth } = require("../config/auth");
 const { validateToken } = require("../config/tokens");
 const { transporter } = require("../config/mailer");
 const User = require("../models/User");
+const Role = require("../models/Role");
 
 class UsersController {
   static register(req, res) {
     const { fullName, dni, email, password, role } = req.body;
 
     if (!fullName || !dni || !email || !password || !role) {
-      return res
-        .status(400)
-        .send({ error: "Todos los campos son obligatorios" });
+      return res.status(400).send({ error: "All fields are required!" });
     }
 
-    User.create(req.body)
-      .then((user) => {
-        res.status(201).send(user);
+    Role.findByPk(role)
+      .then((role) => {
+        if (!role) return res.status(404).send("No matching roles found");
+        const roleId = role.id;
+        const initialRoleId = role.id;
+        User.create({
+          fullName,
+          dni,
+          email,
+          password,
+          roleId,
+          initialRoleId,
+        }).then((user) => {
+          const payload = {
+            fullName: user.fullName,
+            email: user.email,
+            dni: user.dni,
+            roleId: user.roleId,
+            initialRoleId: user.initialRoleId,
+          };
+          res.status(201).send(payload);
+        });
       })
       .catch((error) => {
         console.error("Error when trying to register user:", error);
