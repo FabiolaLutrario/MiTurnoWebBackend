@@ -9,6 +9,15 @@ class Turn extends Sequelize.Model {
       },
     });
   }
+
+  static checkIfItIsAvailable(turnDate, startTimeTurn) {
+    return Turn.findOne({
+      where: {
+        turnDate,
+        startTimeTurn,
+      },
+    });
+  }
 }
 Turn.init(
   {

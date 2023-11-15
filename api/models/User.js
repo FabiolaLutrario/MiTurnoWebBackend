@@ -16,7 +16,7 @@ class User extends Sequelize.Model {
 
 User.init(
   {
-    mail: {
+    email: {
       type: Sequelize.STRING,
       allowNull: false,
       validate: {
@@ -55,18 +55,15 @@ User.init(
   { sequelize: db, modelName: "user" }
 );
 
-User.beforeSave((user) => {
+User.beforeValidate((user) => {
   const salt = bcrypt.genSaltSync();
 
   user.salt = salt;
 
   return user.hash(user.password, salt).then((hash) => {
     user.password = hash;
+    user.initialRole = user.role;
   });
-});
-
-User.beforeCreate((user) => {
-  return (user.initialRole = role);
 });
 
 module.exports = User;

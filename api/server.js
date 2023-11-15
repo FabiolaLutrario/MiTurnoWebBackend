@@ -23,6 +23,8 @@ app.use((err, req, res, next) => {
   res.status(500).send(err);
 });
 
+app.use("/api", routes);
+
 db.sync({ force: false }).then(() => {
   app.listen(5000, () => console.log(`Servidor  en el puerto 5000`));
 });

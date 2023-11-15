@@ -6,9 +6,9 @@ const User = require("../models/User");
 
 class UsersController {
   static register(req, res) {
-    const { fullName, dni, email, password, rol } = req.body;
+    const { fullName, dni, email, password, role } = req.body;
 
-    if (!fullName || !dni || !email || !password || !rol) {
+    if (!fullName || !dni || !email || !password || !role) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
@@ -38,7 +38,7 @@ class UsersController {
             fullName: user.fullName,
             dni: user.dni,
             email: user.email,
-            rol: user.rol,
+            role: user.role,
           };
 
           const token = generateToken(payload, "1d");
@@ -61,7 +61,7 @@ class UsersController {
   }
 
   static getSingleUser(req, res) {
-    const { id } = req.params.id;
+    const { id } = req.params;
 
     User.findOne({ where: { id } })
       .then((user) => {
@@ -71,9 +71,9 @@ class UsersController {
           fullName: user.fullName,
           dni: user.dni,
           email: user.email,
-          rol: user.rol,
+          role: user.role,
         };
-        res.send(payload);
+        res.status(200).send(payload);
       })
       .catch((error) => {
         console.error("Error when trying to get user:", error);
@@ -91,7 +91,7 @@ class UsersController {
 
     User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
-        res.send(users[0]);
+        res.status(200).send(users[0]);
       })
       .catch((error) => {
         console.error("Error when trying to update user:", error);
@@ -112,7 +112,7 @@ class UsersController {
           fullName: user.fullName,
           dni: user.dni,
           email: user.email,
-          rol: user.rol,
+          role: user.role,
         };
 
         const token = generateToken(payload, "10m");
