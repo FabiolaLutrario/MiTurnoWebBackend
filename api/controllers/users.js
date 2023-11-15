@@ -85,7 +85,7 @@ class UsersController {
 
   static logout(req, res) {
     res.clearCookie("token");
-    res.sendStatus(204);
+    res.status(204).send("Logged out");
   }
 
   static editProlife(req, res) {

@@ -25,7 +25,6 @@ User.init(
     },
     salt: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     password: {
       type: Sequelize.STRING,
@@ -41,7 +40,6 @@ User.init(
     },
     initialRole: {
       type: Sequelize.STRING,
-      allowNull: false,
     },
     dni: {
       type: Sequelize.INTEGER,
@@ -55,7 +53,7 @@ User.init(
   { sequelize: db, modelName: "user" }
 );
 
-User.beforeValidate((user) => {
+User.beforeSave((user) => {
   const salt = bcrypt.genSaltSync();
 
   user.salt = salt;
@@ -64,9 +62,8 @@ User.beforeValidate((user) => {
     user.password = hash;
   });
 });
-
-User.beforeValidate((user) => {
-  user.initialRole = user.role;
+User.beforeCreate((user) => {
+  return (user.initialRole = user.role);
 });
 
 module.exports = User;
