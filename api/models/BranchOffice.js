@@ -9,7 +9,7 @@ BranchOffice.init(
       allowNull: false,
     },
     box: {
-      type: Sequelize.NUMBER,
+      type: Sequelize.INTEGER,
       allowNull: false,
     },
     openingTime: {

@@ -20,7 +20,7 @@ class UserAdminController {
   el admin desde la opción "Creación de operadores" desde la vista/perfil
   del Admin*/
   static promoteOrRevokeAdminPermissions(req, res) {
-    const { id } = req.params.userId;
+    const id = req.params.userId;
 
     User.findOne({ where: { id } })
       .then((user) => {
@@ -28,16 +28,12 @@ class UserAdminController {
 
         /* Si un usuario en el que al momento de registrarlo en la base de datos inició
       con un rol Admin por defecto no se puede autorevocar su permiso de Admin*/
-        if (user.initialRole === "Admin" && req.body.rol === "Client")
-          return res
-            .status(400)
-            .send(
-              "An administrator by default cannot self-revoke a permission"
-            );
+        if (user.initialRole === "Admin")
+          return res.status(400).send("A superuser cannot be demoted");
 
         /*       Si pasa todas las validaciones procede a promover o revocar los permisos 
       de "Admin" al usuario según sea el caso */
-        user.role = req.body.rol;
+        user.role = req.body.role;
         user.save().then(() => {
           res.status(200).send("Successful operation!");
         });
@@ -52,7 +48,7 @@ class UserAdminController {
   }
 
   static deleteUser(req, res) {
-    const { id } = req.params.id;
+    const id = req.params.id;
     User.destroy({
       where: { id },
     })

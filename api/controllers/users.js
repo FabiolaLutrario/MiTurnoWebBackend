@@ -40,7 +40,7 @@ class UsersController {
             fullName: user.fullName,
             dni: user.dni,
             email: user.email,
-            rol: user.rol,
+            role: user.role,
           };
 
           const token = generateToken(payload, "1d");
@@ -126,7 +126,7 @@ class UsersController {
             //Genera el link de recuperación de contraseña y lo envía por correo
             const restorePasswordURL = `http://localhost:5000/overwrite-password/${user.token}`;
             const info = transporter.sendMail({
-              from: '"Recuperación de contraseña" <fabiolalutrario@gmail.com>',
+              from: '"Recuperación de contraseña" <turnoweb.mailing@gmail.com>',
               to: user.email,
               subject: "Recuperación de contraseña ✔",
               html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para completar el proceso:</b><a href="${restorePasswordURL}">${restorePasswordURL}</a>`,
@@ -135,7 +135,8 @@ class UsersController {
               res.status(200).send(user.email);
             });
           })
-          .catch(() => {
+          .catch((err) => {
+            console.error(err);
             res.send("Something went wrong");
           });
       })

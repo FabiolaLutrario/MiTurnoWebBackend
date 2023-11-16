@@ -46,7 +46,7 @@ User.init(
       allowNull: false,
     },
     token: {
-      type: Sequelize.STRING,
+      type: Sequelize.TEXT,
       allowNull: true,
     },
   },
