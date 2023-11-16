@@ -8,8 +8,6 @@ class UsersController {
   static register(req, res) {
     const { fullName, dni, email, password, role } = req.body;
 
-    console.log(req.body);
-
     if (!fullName || !dni || !email || !password || !role) {
       return res
         .status(400)
