@@ -8,7 +8,7 @@ BranchOffice.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    box: {
+    boxes: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },

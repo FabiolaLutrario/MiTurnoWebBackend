@@ -2,13 +2,14 @@ const { transporter } = require("../config/mailer");
 const Turn = require("../models/Turn");
 const User = require("../models/User");
 const BranchOffice = require("../models/BranchOffice");
+const moment = require("moment");
 
 class TurnsController {
   static generateTurn(req, res) {
     const currentDate = moment();
-    const { turnDate, startTimeTurn, phoneNumber, branchOfficeId } = req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
+    const { turnDate, horaryId, phoneNumber, branchOfficeId } = req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
 
-    if (!turnDate || !startTimeTurn || !phoneNumber || !branchOfficeId) {
+    if (!turnDate || !horaryId || !phoneNumber || !branchOfficeId) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
@@ -48,12 +49,12 @@ class TurnsController {
     }
 
     /* A continuación va a buscar el user por id, cuando lo encuentre va a buscar la  branchOffice por id,
-    y cuando la encuentre va a verificar si el turno en la fecha y hora seleccionados aún siguen disponibles; cuando pase esas validaciones va a crear el turno y luego hace un setUser(user) y un setBranchOffice(branchOffice). Se hace de esta forma para que al devolver el turn al front vaya con todos las campos(datos) de user y branchOffice*/
+    y cuando la encuentre va a verificar si aún hay turno disponible para la fecha y hora seleccionadas; cuando pase esas validaciones va a crear el turno y luego hace un setUser(user) y un setBranchOffice(branchOffice). Se hace de esta forma para que al devolver el turn al front vaya con todos las campos(datos) de user y branchOffice*/
     User.findByPk(req.params.userId)
       .then((user) => {
         BranchOffice.findByPk(req.body.branchOfficeId).then((branchOffice) => {
-          Turn.checkIfItIsAvailable(turnDate, startTimeTurn).then((turn) => {
-            if (turn)
+          Turn.checkTurns(turnDate, horaryId).then((turns) => {
+            if (turns.length >= branchOffice.boxes)
               return res
                 .status(400)
                 .send(
@@ -61,7 +62,7 @@ class TurnsController {
                 );
             Turn.create({
               turnDate,
-              startTimeTurn,
+              horaryId,
               phoneNumber,
             }).then((turn) => {
               turn.setUser(user);

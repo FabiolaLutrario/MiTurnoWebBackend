@@ -13,7 +13,7 @@ Role.init(
   { sequelize: db, modelName: "role" }
 );
 
-/* Crea los roles por defecto al instanciar la tabla para no estar creandolos cada vez que se hacen las pruebas. Este método no debería incluirse al momento de hacer el deploy; en vez de eso hay que dejar creados los roles en la base de datos.*/
+/* Crea los roles por defecto al instanciar la tabla.*/
 Role.sync()
   .then(() => {
     return Role.count();

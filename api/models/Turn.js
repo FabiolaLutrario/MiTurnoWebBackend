@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("./db");
+const moment = require("moment");
 
 class Turn extends Sequelize.Model {
   static turnsByUser(userId) {
@@ -10,11 +11,11 @@ class Turn extends Sequelize.Model {
     });
   }
 
-  static checkIfItIsAvailable(turnDate, startTimeTurn) {
-    return Turn.findOne({
+  static checkTurns(turnDate, horaryId) {
+    return Turn.findAll({
       where: {
         turnDate,
-        startTimeTurn,
+        horaryId,
       },
     });
   }
@@ -23,7 +24,7 @@ Turn.init(
   {
     //Fecha del turno
     turnDate: {
-      type: Sequelize.DATE,
+      type: Sequelize.DATEONLY,
       allowNull: false,
     },
 
@@ -32,7 +33,7 @@ Turn.init(
 
     //Día en el cual se reservó el turno
     reservationDate: {
-      type: Sequelize.DATE,
+      type: Sequelize.DATEONLY,
       allowNull: false,
     },
     //Hora en la cual se reservó el turno
@@ -60,11 +61,19 @@ Turn.beforeCreate((turn) => {
 /* Al momento de guardar el turno captura la fecha y hora actual y la guarda en reservationDate y 
 reservationTime respectivamente*/
 Turn.beforeValidate((turn) => {
-  turn.reservationDate = new Date(); // Captura la fecha actual
+  const currentDate = new Date();
+  const year = currentDate.getFullYear(); // Obtiene el año (ejemplo: 2023)
+  const month = currentDate.getMonth() + 1; // Mes (0-11), así que se suma 1 (ejemplo: 11 para noviembre)
+  const day = currentDate.getDate(); // Día del mes (ejemplo: 15)
 
-  turn.reservationTime = new Date().toLocaleTimeString("es-ES", {
-    hour12: false,
-  }); // Captura la hora actual en formato de 24 horas (HH:MM:SS)
+  // Ejemplo: 15-11-2023
+  const date = `${year}-${month}-${day}`;
+
+  // Obtiene la hora actual en el formato HH:mm:ss
+  const currentTime = moment().format("HH:mm:ss");
+
+  turn.reservationDate = date;
+  turn.reservationTime = currentTime;
 
   return turn;
 });

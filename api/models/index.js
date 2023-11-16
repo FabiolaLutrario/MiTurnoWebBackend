@@ -3,6 +3,7 @@ const Turn = require("./Turn");
 const BranchOffice = require("./BranchOffice");
 const Horary = require("./Horary");
 const Role = require("./Role");
+const BranchOfficeService = require("./BranchOffice");
 
 Turn.belongsTo(User, { as: "user" });
 Turn.belongsTo(BranchOffice, { as: "branchOffice" });
