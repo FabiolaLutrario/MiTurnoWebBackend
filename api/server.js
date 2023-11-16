@@ -33,6 +33,6 @@ db.sync({ force: false }).then(() => {
   //   password: "Admin",
   //   role: "Admin",
   // });
-  app.listen(5000, () => console.log(`Servidor  en el puerto 5000`));
+  app.listen(5001, () => console.log(`Servidor  en el puerto 5000`));
 });
 module.exports = app;
