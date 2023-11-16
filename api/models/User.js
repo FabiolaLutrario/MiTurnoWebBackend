@@ -42,7 +42,7 @@ User.init(
       type: Sequelize.STRING,
     },
     dni: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.STRING,
       allowNull: false,
     },
     token: {
