@@ -26,6 +26,13 @@ app.use((err, req, res, next) => {
 app.use("/api", routes);
 
 db.sync({ force: false }).then(() => {
+  // User.create({
+  //   fullName: "Admin",
+  //   dni: 1,
+  //   email: "juanarismendidiaz@gmail.com",
+  //   password: "Admin",
+  //   role: "Admin",
+  // });
   app.listen(5000, () => console.log(`Servidor  en el puerto 5000`));
 });
 module.exports = app;
