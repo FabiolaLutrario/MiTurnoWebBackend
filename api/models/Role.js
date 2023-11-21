@@ -22,6 +22,7 @@ Role.sync()
     if (count === 0) {
       const rolesToCreate = [
         { id: "Administrador" },
+        { id: "Super Administrador" },
         { id: "Operador" },
         { id: "Cliente" },
       ];
