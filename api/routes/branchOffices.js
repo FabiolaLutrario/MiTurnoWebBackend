@@ -1,5 +1,11 @@
 const express = require("express");
-const branchOfficesController = require("../controllers/branchOffices");
 const router = express.Router();
+const BranchOfficesControler = require("../controllers/branchOffices");
+
+router.post("/create", BranchOfficesControler.create);
+router.get("/single/:id", BranchOfficesControler.single);
+router.get("/all", BranchOfficesControler.all);
+router.put("/edit/:id", BranchOfficesControler.edit);
+router.delete("/delete/:id", BranchOfficesControler.delete);
 
 module.exports = router;
