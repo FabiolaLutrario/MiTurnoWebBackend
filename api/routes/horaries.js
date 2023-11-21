@@ -1,10 +1,10 @@
 const express = require("express");
-const HorarysController = require("../controllers/horarys");
+const HorariesController = require("../controllers/horaries");
 const router = express.Router();
 
 router.get(
   "/:date/:branchOfficeId",
-  HorarysController.getHorarysByDateAndHoraryBranchOffice
+  HorariesController.getHorariesByDateAndHoraryBranchOffice
 );
 
 module.exports = router;

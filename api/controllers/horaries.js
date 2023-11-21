@@ -4,11 +4,12 @@ const BranchOffice = require("../models/BranchOffice");
 const { Op } = require("sequelize");
 
 class HoraryController {
-  static getHorarysByDateAndHoraryBranchOffice(req, res) {
+  static getHorariesByDateAndHoraryBranchOffice(req, res) {
     Turn.findAll({
       where: {
-        branchOfficeId: req.params.branchOfficeId,
-        turnDate: req.params.date,
+        branch_officeId: req.params.branchOfficeId,
+        turn_date: req.params.date,
+        confirmation:"pending"
       },
     })
       .then((turns) => {
@@ -21,18 +22,17 @@ class HoraryController {
                 where: {
                   id: {
                     [Op.between]: [
-                      branchOffice.openingTime,
-                      branchOffice.closingTime,
+                      branchOffice.opening_time,
+                      branchOffice.closing_time,
                     ],
                   },
                 },
-              }).then((horarys) => {
-                return res.status(200).send(horarys);
+              }).then((horaries) => {
+                return res.status(200).send(horaries);
               });
             }
           );
         }
-        console.log("Oyeeeeeeeeeeeeeeeee ", turns);
         const turnsGroupedByHoraryId = turns.reduce((grouped, turn) => {
           const horaryId = turn.horaryId;
 
@@ -52,7 +52,7 @@ class HoraryController {
             // Filtrar los horarios obteniendo aquellos que no estan disponibles
             /*(No están disponibles si la cantidad de turnos para ese horario
       excede o iguala la cantidad de boxes*/
-            const unavailableHorarys = Object.keys(
+            const unavailableHoraries = Object.keys(
               turnsGroupedByHoraryId
             ).filter(
               (horaryId) =>
@@ -62,20 +62,20 @@ class HoraryController {
               where: {
                 id: {
                   [Op.between]: [
-                    branchOffice.openingTime,
-                    branchOffice.closingTime,
+                    branchOffice.opening_time,
+                    branchOffice.closing_time,
                   ],
-                  [Op.notIn]: unavailableHorarys,
+                  [Op.notIn]: unavailableHoraries,
                 },
               },
-            }).then((horarys) => {
-              return res.status(200).send(horarys);
+            }).then((horaries) => {
+              return res.status(200).send(horaries);
             });
           }
         );
       })
       .catch((error) => {
-        console.error("Error when trying to get horarys:", error);
+        console.error("Error when trying to get horaries:", error);
         return res.status(500).send("Internal Server Error");
       });
   }
