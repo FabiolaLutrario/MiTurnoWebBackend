@@ -8,20 +8,20 @@ BranchOffice.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    box: {
+    boxes: {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-    openingTime: {
+    opening_time: {
       type: Sequelize.TIME,
       allowNull: false,
     },
-    closingTime: {
+    closing_time: {
       type: Sequelize.TIME,
       allowNull: false,
     },
   },
-  { sequelize: db, modelName: "branchOffice" }
+  { sequelize: db, modelName: "branch_office" }
 );
 
 module.exports = BranchOffice;
