@@ -43,7 +43,11 @@ class UsersController {
 
           const token = generateToken(payload, "1d");
 
-          res.cookie("token", token);
+          res.cookie("token", token, {
+            sameSite: "none",
+            httpOnly: true,
+            secure: true,
+          });
 
           res.send(payload);
         });
@@ -122,7 +126,7 @@ class UsersController {
           .save()
           .then(() => {
             //Genera el link de recuperación de contraseña y lo envía por correo
-            const restorePasswordURL = `http://localhost:5000/overwrite-password/${user.token}`;
+            const restorePasswordURL = `http://localhost:3000/new-password/${user.token}`;
             const info = transporter.sendMail({
               from: '"Recuperación de contraseña" <turnoweb.mailing@gmail.com>',
               to: user.email,
@@ -174,7 +178,6 @@ class UsersController {
 
     const { user } = validateToken(token);
     if (!user) return res.sendStatus(401);
-
     User.findOne({ where: { token } })
       .then((user) => {
         if (!user) return res.sendStatus(401);
