@@ -32,19 +32,11 @@ User.init(
       type: Sequelize.STRING,
       allowNull: false,
     },
-    fullName: {
+    full_name: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    roleId: {
-      type: Sequelize.STRING,
-      allowNull: false,
-      references: {
-        model: Role,
-        key: "id",
-      },
-    },
-    initialRoleId: {
+    role_id: {
       type: Sequelize.STRING,
       allowNull: false,
       references: {
@@ -73,8 +65,5 @@ User.beforeCreate((user) => {
     user.password = hash;
   });
 });
-/* User.beforeCreate((user) => {
-  return (user.initialRole = user.role);
-}); */
 
 module.exports = User;

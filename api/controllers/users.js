@@ -7,31 +7,28 @@ const Role = require("../models/Role");
 
 class UsersController {
   static register(req, res) {
-    const { fullName, dni, email, password, role } = req.body;
+    const { fullName, dni, email, password, roleId } = req.body;
 
-    if (!fullName || !dni || !email || !password || !role) {
+    if (!fullName || !dni || !email || !password || !roleId) {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
-    Role.findByPk(role)
+    Role.findByPk(roleId)
       .then((role) => {
         if (!role) return res.status(404).send("No matching roles found");
         const roleId = role.id;
-        const initialRoleId = role.id;
         User.create({
           fullName,
           dni,
           email,
           password,
           roleId,
-          initialRoleId,
         }).then((user) => {
           const payload = {
-            fullName: user.fullName,
+            fullName: user.full_name,
             email: user.email,
             dni: user.dni,
-            roleId: user.roleId,
-            initialRoleId: user.initialRoleId,
+            roleId: user.role_id,
           };
           res.status(201).send(payload);
         });
@@ -53,10 +50,10 @@ class UsersController {
 
           const payload = {
             id: user.id,
-            fullName: user.fullName,
+            fullName: user.full_name,
             dni: user.dni,
             email: user.email,
-            role: user.role,
+            roleId: user.role_id,
           };
 
           const token = generateToken(payload, "1d");
@@ -86,10 +83,10 @@ class UsersController {
         if (!user) return res.sendStatus(404);
         const payload = {
           id: user.id,
-          fullName: user.fullName,
+          fullName: user.full_name,
           dni: user.dni,
           email: user.email,
-          role: user.role,
+          roleId: user.role_id,
         };
         res.status(200).send(payload);
       })
@@ -104,7 +101,7 @@ class UsersController {
     res.status(204).send("Logged out");
   }
 
-  static editProlife(req, res) {
+  static editProfile(req, res) {
     const id = req.params.userId;
 
     User.update(req.body, { where: { id }, returning: true })
@@ -127,10 +124,10 @@ class UsersController {
         //Si el usuario existe va a generar un token
         const payload = {
           id: user.id,
-          fullName: user.fullName,
+          fullName: user.full_name,
           dni: user.dni,
           email: user.email,
-          role: user.role,
+          roleId: user.role_id,
         };
 
         const token = generateToken(payload, "10m");
@@ -204,6 +201,67 @@ class UsersController {
       })
       .catch((error) => {
         console.error("Error when trying to overwrite password:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+
+  static getAllUsers(req, res) {
+    User.findAll({
+      attributes: { exclude: ["hash", "salt", "token"] },
+    })
+      .then((users) => {
+        if (!users || users.length === 0) return res.sendStatus(404);
+        return res.send(users);
+      })
+      .catch((error) => {
+        console.error("Error getting users:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+
+  //  Se puede promover usuario de "Cliente" a "Administrador" u "Operador" y viceversa;
+  static promoteOrRevokePermissions(req, res) {
+    const { id } = req.params.userId;
+
+    User.findOne({ where: { id } })
+      .then((user) => {
+        if (!user) return res.sendStatus(404);
+
+        /* Un Super Administrador no se puede autorevocar su permiso*/
+        if (
+          user.roleId === "Super Administrador")
+          return res
+            .status(400)
+            .send(
+              "An administrator by default cannot self-revoke a permission"
+            );
+
+        // Si pasa todas las validaciones procede a promover o revocar los permisos según sea el caso
+        user.roleId = req.body.roleId;
+        user.save().then(() => {
+          res.status(200).send("Successful operation!");
+        });
+      })
+      .catch((error) => {
+        console.error(
+          "Error when trying to promote or revoke permissions:",
+          error
+        );
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+
+  static deleteUser(req, res) {
+    const { id } = req.params.id;
+    User.destroy({
+      where: { id },
+    })
+      .then((user) => {
+        if (!user) return res.sendStatus(404);
+        return res.sendStatus(202);
+      })
+      .catch((error) => {
+        console.error("Error when trying to delete user:", error);
         return res.status(500).send("Internal Server Error");
       });
   }
