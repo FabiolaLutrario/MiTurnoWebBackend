@@ -8,5 +8,6 @@ router.put(
   UserAdminController.promoteOrRevokeAdminPermissions
 );
 router.delete("/user/:id", UserAdminController.deleteUser);
+router.post("/new-operator", UserAdminController.operator);
 
 module.exports = router;

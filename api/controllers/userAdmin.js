@@ -61,5 +61,22 @@ class UserAdminController {
         return res.status(500).send("Internal Server Error");
       });
   }
+  static operator(req, res) {
+    const { fullName, dni, email, password, role, branchOfficeId } = req.body;
+
+    if (!fullName || !dni || !email || !password || !role || !branchOfficeId) {
+      return res
+        .status(400)
+        .send({ error: "Todos los campos son obligatorios" });
+    }
+    User.create(req.body)
+      .then((operator) => {
+        res.status(201).send(operator);
+      })
+      .catch((error) => {
+        console.error("Error when trying to register operator:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
 }
 module.exports = UserAdminController;
