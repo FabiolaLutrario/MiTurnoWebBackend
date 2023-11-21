@@ -142,7 +142,6 @@ class UsersController {
           .then(() => {
             //Genera el link de recuperación de contraseña y lo envía por correo
             const restorePasswordURL = `http://localhost:3000/new-password/${user.token}`;
-            const restorePasswordURL = `http://localhost:3000/overwrite-password/${user.token}`;
             const info = transporter.sendMail({
               from: '"Recuperación de contraseña" <turnoweb.mailing@gmail.com>',
               to: user.email,
