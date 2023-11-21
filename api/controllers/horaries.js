@@ -7,18 +7,20 @@ class HoraryController {
   static getHorariesByDateAndHoraryBranchOffice(req, res) {
     Turn.findAll({
       where: {
-        branch_officeId: req.params.branchOfficeId,
+        branch_office_id: req.params.branchOfficeId,
         turn_date: req.params.date,
-        confirmation:"pending"
+        confirmation: "pending",
       },
     })
       .then((turns) => {
         if (!turns || turns.length === 0) {
-          BranchOffice.findByPk(req.params.branchOfficeId).then(
+          return BranchOffice.findByPk(req.params.branchOfficeId).then(
             (branchOffice) => {
-              if (!branchOffice || branchOffice.length === 0)
+              if (!branchOffice || branchOffice.length === 0) {
                 return res.status(404).send("Branch Office not available");
-              Horary.findAll({
+              }
+
+              return Horary.findAll({
                 where: {
                   id: {
                     [Op.between]: [
@@ -33,6 +35,7 @@ class HoraryController {
             }
           );
         }
+
         const turnsGroupedByHoraryId = turns.reduce((grouped, turn) => {
           const horaryId = turn.horaryId;
 
@@ -44,21 +47,16 @@ class HoraryController {
           return grouped;
         }, {});
 
-        return turnsGroupedByHoraryId;
-      })
-      .then((turnsGroupedByHoraryId) => {
-        BranchOffice.findByPk(req.params.branchOfficeId).then(
+        return BranchOffice.findByPk(req.params.branchOfficeId).then(
           (branchOffice) => {
-            // Filtrar los horarios obteniendo aquellos que no estan disponibles
-            /*(No están disponibles si la cantidad de turnos para ese horario
-      excede o iguala la cantidad de boxes*/
-            const unavailableHoraries = Object.keys(
-              turnsGroupedByHoraryId
-            ).filter(
-              (horaryId) =>
-                turnsGroupedByHoraryId[horaryId].length >= branchOffice.boxes
-            );
-            Horary.findAll({
+            const unavailableHoraries = Object.keys(turnsGroupedByHoraryId)
+              .filter(
+                (horaryId) =>
+                  turnsGroupedByHoraryId[horaryId].length >= branchOffice.boxes
+              )
+              //.filter((horaryId) => horaryId !== null);
+
+            return Horary.findAll({
               where: {
                 id: {
                   [Op.between]: [

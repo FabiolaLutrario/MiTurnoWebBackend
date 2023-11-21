@@ -7,31 +7,26 @@ const Role = require("../models/Role");
 
 class UsersController {
   static register(req, res) {
-    const { fullName, dni, email, password, roleId } = req.body;
+    const { fullName, dni, email, password } = req.body;
 
-    if (!fullName || !dni || !email || !password || !roleId) {
+    if (!fullName || !dni || !email || !password) {
       return res.status(400).send({ error: "All fields are required!" });
     }
-
-    Role.findByPk(roleId)
-      .then((role) => {
-        if (!role) return res.status(404).send("No matching roles found");
-        const roleId = role.id;
-        User.create({
-          fullName,
-          dni,
-          email,
-          password,
-          roleId,
-        }).then((user) => {
-          const payload = {
-            fullName: user.full_name,
-            email: user.email,
-            dni: user.dni,
-            roleId: user.role_id,
-          };
-          res.status(201).send(payload);
-        });
+    User.create({
+      full_name: fullName,
+      dni,
+      email,
+      password,
+      role_id: "Cliente",
+    })
+      .then((user) => {
+        const payload = {
+          fullName: user.full_name,
+          email: user.email,
+          dni: user.dni,
+          roleId: user.role_id,
+        };
+        res.status(201).send(payload);
       })
       .catch((error) => {
         console.error("Error when trying to register user:", error);
@@ -107,8 +102,15 @@ class UsersController {
 
   static editProfile(req, res) {
     const id = req.params.userId;
+    const { fullName, dni } = req.body;
 
-    User.update(req.body, { where: { id }, returning: true })
+    User.update(
+      {
+        full_name: fullName,
+        dni,
+      },
+      { where: { id }, returning: true }
+    )
       .then(([rows, users]) => {
         res.status(200).send(users[0]);
       })
@@ -232,7 +234,7 @@ class UsersController {
         if (!user) return res.sendStatus(404);
 
         /* Un Super Administrador no se puede autorevocar su permiso*/
-        if (user.roleId === "Super Administrador")
+        if (user.role_id === "Super Administrador")
           return res
             .status(400)
             .send(
@@ -240,7 +242,7 @@ class UsersController {
             );
 
         // Si pasa todas las validaciones procede a promover o revocar los permisos según sea el caso
-        user.roleId = req.body.roleId;
+        user.role_id = req.body.roleId;
         user.save().then(() => {
           res.status(200).send("Successful operation!");
         });

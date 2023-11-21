@@ -1,6 +1,8 @@
 const Sequelize = require("sequelize");
 const db = require("./db");
 const moment = require("moment");
+const BranchOffice = require("./BranchOffice");
+const Horary = require("./Horary");
 
 class Turn extends Sequelize.Model {
   static turnsByUser(userId) {
@@ -14,8 +16,8 @@ class Turn extends Sequelize.Model {
   static checkTurns(turnDate, horaryId) {
     return Turn.findAll({
       where: {
-        turnDate,
-        horaryId,
+        turn_date: turnDate,
+        horary_id: horaryId,
       },
     });
   }
@@ -49,6 +51,22 @@ Turn.init(
     },
     confirmation: {
       type: Sequelize.STRING,
+    },
+    branch_office_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: BranchOffice,
+        key: "id",
+      },
+    },
+    horary_id: {
+      type: Sequelize.TIME,
+      allowNull: false,
+      references: {
+        model: Horary,
+        key: "id",
+      },
     },
   },
   { sequelize: db, modelName: "turn" }

@@ -61,9 +61,10 @@ class TurnsController {
                   "The turn on the selected day and time is no longer available"
                 );
             Turn.create({
-              turnDate,
-              horaryId,
-              phoneNumber,
+              turn_date: turnDate,
+              horary_id: horaryId,
+              phone_number: phoneNumber,
+              branch_office_id: branchOfficeId,
             }).then((turn) => {
               turn.setUser(user);
               turn.setBranchOffice(branchOffice);
@@ -85,7 +86,10 @@ class TurnsController {
       },
     })
       .then((turns) => {
-        if (!turns) res.status(404).send("There are no turns in state: ",req.params.confirmation)
+        if (!turns)
+          res
+            .status(404)
+            .send("There are no turns in state: ", req.params.confirmation);
         return res.status(200).send(turns);
       })
       .catch((error) => {

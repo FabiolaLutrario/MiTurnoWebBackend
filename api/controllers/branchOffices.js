@@ -2,13 +2,18 @@ const { BranchOffice } = require("../models");
 
 class BranchOfficesController {
   static create(req, res) {
-    const { name, box, openingTime, closingTime } = req.body;
-    if (!name || !box || !openingTime || !closingTime) {
+    const { name, boxes, openingTime, closingTime } = req.body;
+    if (!name || !boxes || !openingTime || !closingTime) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
     }
-    BranchOffice.create(req.body)
+    BranchOffice.create({
+      name,
+      boxes,
+      opening_time: openingTime,
+      closing_time: closingTime,
+    })
       .then((branch) => {
         res.status(201).send(branch);
       })
