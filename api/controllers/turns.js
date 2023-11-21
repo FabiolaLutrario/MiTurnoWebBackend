@@ -78,24 +78,6 @@ class TurnsController {
       });
   }
 
-  /* Verifica si hay turnos disponibles para determinada fecha; si retorna false se bloquea esa fecha en el calendar del front*/
-  static areTurnsAvailable(req, res) {
-    Turn.findAll({
-      where: {
-        confirmation: "pending",
-        turnDate: req.params.date,
-      },
-    })
-      .then((turns) => {
-        if (turns.length >= 20) return res.status(404).send(false);
-        return res.status(200).send(true);
-      })
-      .catch((error) => {
-        console.error("Error when trying to get available turns:", error);
-        return res.status(500).send("Internal Server Error");
-      });
-  }
-
   static getAllTurnsByConfirmation(req, res) {
     Turn.findAll({
       where: {
@@ -103,6 +85,7 @@ class TurnsController {
       },
     })
       .then((turns) => {
+        if (!turns) res.status(404).send("There are no turns in state: ",req.params.confirmation)
         return res.status(200).send(turns);
       })
       .catch((error) => {

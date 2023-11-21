@@ -23,7 +23,7 @@ class Turn extends Sequelize.Model {
 Turn.init(
   {
     //Fecha del turno
-    turnDate: {
+    turn_date: {
       type: Sequelize.DATEONLY,
       allowNull: false,
     },
@@ -32,18 +32,18 @@ Turn.init(
     //La va a traer desde la tabla "Horary"
 
     //Día en el cual se reservó el turno
-    reservationDate: {
+    reservation_date: {
       type: Sequelize.DATEONLY,
       allowNull: false,
     },
     //Hora en la cual se reservó el turno
-    reservationTime: {
+    reservation_time: {
       type: Sequelize.TIME,
       allowNull: false,
     },
     /*     Número de télefono a preferencia del 
     usuario al momento de generar el turno */
-    phoneNumber: {
+    phone_number: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -72,8 +72,8 @@ Turn.beforeValidate((turn) => {
   // Obtiene la hora actual en el formato HH:mm:ss
   const currentTime = moment().format("HH:mm:ss");
 
-  turn.reservationDate = date;
-  turn.reservationTime = currentTime;
+  turn.reservation_date = date;
+  turn.reservation_time = currentTime;
 
   return turn;
 });
