@@ -9,6 +9,6 @@ router.get(
 );
 router.get("/:id", TurnsController.getTurn);
 router.put("/turn-confirmation/:id", TurnsController.changeTurnConfirmation);
-router.put("/:id", TurnsController.modifyTurn);
+//router.put("/:id", TurnsController.modifyTurn);
 
 module.exports = router;

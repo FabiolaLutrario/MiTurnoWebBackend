@@ -37,7 +37,7 @@ class HoraryController {
         }
 
         const turnsGroupedByHoraryId = turns.reduce((grouped, turn) => {
-          const horaryId = turn.horaryId;
+          const horaryId = turn.horary_id;
 
           if (!grouped[horaryId]) {
             grouped[horaryId] = [];
@@ -49,12 +49,12 @@ class HoraryController {
 
         return BranchOffice.findByPk(req.params.branchOfficeId).then(
           (branchOffice) => {
-            const unavailableHoraries = Object.keys(turnsGroupedByHoraryId)
-              .filter(
-                (horaryId) =>
-                  turnsGroupedByHoraryId[horaryId].length >= branchOffice.boxes
-              )
-              //.filter((horaryId) => horaryId !== null);
+            const unavailableHoraries = Object.keys(
+              turnsGroupedByHoraryId
+            ).filter(
+              (horaryId) =>
+                turnsGroupedByHoraryId[horaryId].length >= branchOffice.boxes
+            );
 
             return Horary.findAll({
               where: {

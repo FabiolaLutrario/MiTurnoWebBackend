@@ -3,6 +3,7 @@ const db = require("./db");
 const moment = require("moment");
 const BranchOffice = require("./BranchOffice");
 const Horary = require("./Horary");
+const User = require("./User");
 
 class Turn extends Sequelize.Model {
   static turnsByUser(userId) {
@@ -18,6 +19,7 @@ class Turn extends Sequelize.Model {
       where: {
         turn_date: turnDate,
         horary_id: horaryId,
+        confirmation: "pending",
       },
     });
   }
@@ -52,6 +54,14 @@ Turn.init(
     confirmation: {
       type: Sequelize.STRING,
     },
+    user_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
     branch_office_id: {
       type: Sequelize.INTEGER,
       allowNull: false,
@@ -72,25 +82,16 @@ Turn.init(
   { sequelize: db, modelName: "turn" }
 );
 
-Turn.beforeCreate((turn) => {
-  return (turn.confirmation = "pending");
-});
-
 /* Al momento de guardar el turno captura la fecha y hora actual y la guarda en reservationDate y 
 reservationTime respectivamente*/
 Turn.beforeValidate((turn) => {
   const currentDate = new Date();
-  const year = currentDate.getFullYear(); // Obtiene el año (ejemplo: 2023)
-  const month = currentDate.getMonth() + 1; // Mes (0-11), así que se suma 1 (ejemplo: 11 para noviembre)
-  const day = currentDate.getDate(); // Día del mes (ejemplo: 15)
-
-  // Ejemplo: 15-11-2023
-  const date = `${year}-${month}-${day}`;
 
   // Obtiene la hora actual en el formato HH:mm:ss
   const currentTime = moment().format("HH:mm:ss");
 
-  turn.reservation_date = date;
+  turn.confirmation = "pending";
+  turn.reservation_date = currentDate;
   turn.reservation_time = currentTime;
 
   return turn;

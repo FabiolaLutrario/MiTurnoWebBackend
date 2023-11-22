@@ -3,6 +3,7 @@ const Turn = require("../models/Turn");
 const User = require("../models/User");
 const BranchOffice = require("../models/BranchOffice");
 const moment = require("moment");
+const { Op } = require("sequelize");
 
 class TurnsController {
   static generateTurn(req, res) {
@@ -49,7 +50,7 @@ class TurnsController {
     }
 
     /* A continuación va a buscar el user por id, cuando lo encuentre va a buscar la  branchOffice por id,
-    y cuando la encuentre va a verificar si aún hay turno disponible para la fecha y hora seleccionadas; cuando pase esas validaciones va a crear el turno y luego hace un setUser(user) y un setBranchOffice(branchOffice). Se hace de esta forma para que al devolver el turn al front vaya con todos las campos(datos) de user y branchOffice*/
+    y cuando la encuentre va a verificar si aún hay turno disponible para la fecha y hora seleccionadas; cuando pase esas validaciones va a crear el turno*/
     User.findByPk(req.params.userId)
       .then((user) => {
         BranchOffice.findByPk(req.body.branchOfficeId).then((branchOffice) => {
@@ -65,9 +66,8 @@ class TurnsController {
               horary_id: horaryId,
               phone_number: phoneNumber,
               branch_office_id: branchOfficeId,
+              user_id: user.id,
             }).then((turn) => {
-              turn.setUser(user);
-              turn.setBranchOffice(branchOffice);
               res.status(201).send(turn);
             });
           });
@@ -113,6 +113,7 @@ class TurnsController {
         return res.status(500).send("Internal Server Error");
       });
   }
+
   static changeTurnConfirmation(req, res) {
     const { id } = req.params;
 
@@ -129,19 +130,82 @@ class TurnsController {
       });
   }
 
-  static modifyTurn(req, res) {
-    /*     const { id } = req.params;
+  //El método modifyTurn funciona casi todo; el error que tiene es que si se intenta modificar un turno seleccionando un horario que ya no está disponible el turno se modifica con el horario seleccionado
+  /*   static modifyTurn(req, res) {
+    const currentDate = moment();
+    const { turnDate, horaryId, phoneNumber, branchOfficeId } = req.body; 
 
-    Turn.update(
-      req.body, { where: { id }, returning: true }
-    )
-      .then(([rows, turns]) => {
-        res.status(200).send(turns[0]);
+    if (!turnDate || !horaryId || !phoneNumber || !branchOfficeId) {
+      return res
+        .status(400)
+        .send({ error: "Todos los campos son obligatorios" });
+    }
+
+    const minDate = moment().subtract(31, "days");
+    const maxDate = moment().add(31, "days");
+
+    if (
+      moment(turnDate).isBefore(minDate, "day") ||
+      moment(turnDate).isAfter(maxDate, "day")
+    ) {
+      return res.status(400).send({
+        error:
+          "The selected date must be within the range of up to 31 days before or after the current date",
+      });
+    }
+
+    const dayOfWeek = moment(turnDate).day();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      return res
+        .status(400)
+        .send({ error: "The selected date is a Saturday or Sunday" });
+    }
+
+    if (moment(turnDate).isBefore(currentDate, "day")) {
+      return res
+        .status(400)
+        .send({ error: "The selected date is before the current date" });
+    }
+
+    const { id } = req.params;
+    const currentTime = moment().format("HH:mm:ss");
+
+    BranchOffice.findByPk(req.body.branchOfficeId)
+      .then((branchOffice) => {
+        Turn.findAll({
+          where: {
+            turn_date: turnDate,
+            horary_id: horaryId,
+            confirmation: "pending",
+            id: { [Op.not]: id },
+          },
+        }).then((turns) => {
+          console.log(turns.length, " yyyyy ", branchOffice.boxes);
+          if (turns.length >= branchOffice.boxes)
+            return res
+              .status(400)
+              .send(
+                "The turn on the selected day and time is no longer available"
+              );
+          Turn.update(
+            {
+              turn_date: turnDate,
+              horary_id: horaryId,
+              phone_number: phoneNumber,
+              branch_office_id: branchOfficeId,
+              reservation_date: currentDate,
+              reservation_time: currentTime,
+            },
+            { where: { id }, returning: true }
+          ).then(([rows, turns]) => {
+            res.status(200).send(turns[0]);
+          });
+        });
       })
       .catch((error) => {
         console.error("Error when trying to update turn confirmation:", error);
         return res.status(500).send("Internal Server Error");
-      }); */
-  }
+      });
+  } */
 }
 module.exports = TurnsController;
