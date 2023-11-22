@@ -12,19 +12,22 @@ class UsersController {
     if (!fullName || !dni || !email || !password) {
       return res.status(400).send({ error: "All fields are required!" });
     }
-    User.create({
-      full_name: fullName,
-      dni,
-      email,
-      password,
-      role_id: "Cliente",
+    User.findOrCreate({
+      where: { email },
+      defaults: {
+        full_name: fullName,
+        dni,
+        password,
+        role_id: "Cliente",
+      },
     })
-      .then((user) => {
+      .then((userArray) => {
+        if (!userArray[1]) return res.status(409).send("Email already exists");
         const payload = {
-          fullName: user.full_name,
-          email: user.email,
-          dni: user.dni,
-          roleId: user.role_id,
+          fullName: userArray[0].full_name,
+          email: userArray[0].email,
+          dni: userArray[0].dni,
+          roleId: userArray[0].role_id,
         };
         res.status(201).send(payload);
       })
@@ -213,7 +216,7 @@ class UsersController {
 
   static getAllUsers(req, res) {
     User.findAll({
-      attributes: { exclude: ["hash", "salt", "token"] },
+      attributes: { exclude: ["password", "salt", "token"] },
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);
@@ -267,6 +270,53 @@ class UsersController {
       })
       .catch((error) => {
         console.error("Error when trying to delete user:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+  static registerOperator(req, res) {
+    const { fullName, dni, email, password, branch_office_id } = req.body;
+
+    if (!fullName || !dni || !email || !password) {
+      return res.status(400).send({ error: "All fields are required!" });
+    }
+
+    User.findOrCreate({
+      where: { email },
+      defaults: {
+        full_name: fullName,
+        dni,
+        password,
+        branch_office_id,
+        role_id: "Operador",
+      },
+    })
+      .then((operatorArray) => {
+        if (!operatorArray[1])
+          return res.status(409).send("Email already exists");
+        const payload = {
+          fullName: operatorArray[0].full_name,
+          email: operatorArray[0].email,
+          dni: operatorArray[0].dni,
+          roleId: operatorArray[0].role_id,
+        };
+        res.status(201).send(payload);
+      })
+      .catch((error) => {
+        console.error("Error when trying to register operator:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+  static getOperators(req, res) {
+    User.findAll({
+      where: { role_id: "Operador" },
+      attributes: { exclude: ["password", "salt", "token"] },
+    })
+      .then((users) => {
+        if (!users || users.length === 0) return res.sendStatus(404);
+        return res.send(users);
+      })
+      .catch((error) => {
+        console.error("Error getting users:", error);
         return res.status(500).send("Internal Server Error");
       });
   }
