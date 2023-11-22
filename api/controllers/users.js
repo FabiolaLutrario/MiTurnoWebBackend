@@ -298,6 +298,7 @@ class UsersController {
           email: operatorArray[0].email,
           dni: operatorArray[0].dni,
           roleId: operatorArray[0].role_id,
+          branch_office_id: operatorArray[0].branch_office_id,
         };
         res.status(201).send(payload);
       })
