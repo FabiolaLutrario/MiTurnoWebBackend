@@ -4,6 +4,7 @@ const { validateToken } = require("../config/tokens");
 const { transporter } = require("../config/mailer");
 const User = require("../models/User");
 const Role = require("../models/Role");
+const { Turn } = require("../models");
 
 class UsersController {
   static register(req, res) {
@@ -51,7 +52,6 @@ class UsersController {
             fullName: user.full_name,
             dni: user.dni,
             email: user.email,
-            roleId: user.role_id,
           };
 
           const token = generateToken(payload, "1d");
@@ -79,18 +79,23 @@ class UsersController {
 
   static getSingleUser(req, res) {
     const { id } = req.params;
-
-    User.findOne({ where: { id } })
-      .then((user) => {
-        if (!user) return res.sendStatus(404);
-        const payload = {
-          id: user.id,
-          fullName: user.full_name,
-          dni: user.dni,
-          email: user.email,
-          roleId: user.role_id,
-        };
-        res.status(200).send(payload);
+    Turn.findAll({
+      where: {
+        user_id: id,
+      },
+    })
+      .then((turns) => {
+        User.findOne({ where: { id } }).then((user) => {
+          if (!user) return res.sendStatus(404);
+          const payload = {
+            id: user.id,
+            fullName: user.full_name,
+            dni: user.dni,
+            email: user.email,
+            turns: turns,
+          };
+          res.status(200).send(payload);
+        });
       })
       .catch((error) => {
         console.error("Error when trying to get user:", error);
@@ -136,7 +141,6 @@ class UsersController {
           fullName: user.full_name,
           dni: user.dni,
           email: user.email,
-          roleId: user.role_id,
         };
 
         const token = generateToken(payload, "10m");
@@ -216,7 +220,7 @@ class UsersController {
 
   static getAllUsers(req, res) {
     User.findAll({
-      attributes: { exclude: ["password", "salt", "token"] },
+      attributes: { exclude: ["password", "salt", "token", "role_id"] },
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);
