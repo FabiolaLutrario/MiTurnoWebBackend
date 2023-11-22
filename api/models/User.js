@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const bcrypt = require("bcrypt");
 const db = require("./db");
 const Role = require("./Role");
+const BranchOffice = require("./BranchOffice");
 
 class User extends Sequelize.Model {
   hash(password, salt) {
@@ -41,6 +42,13 @@ User.init(
       allowNull: false,
       references: {
         model: Role,
+        key: "id",
+      },
+    },
+    branch_office_id: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: BranchOffice,
         key: "id",
       },
     },
