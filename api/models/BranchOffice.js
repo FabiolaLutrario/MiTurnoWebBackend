@@ -7,6 +7,12 @@ BranchOffice.init(
     name: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
     },
     boxes: {
       type: Sequelize.INTEGER,
