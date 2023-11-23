@@ -7,7 +7,7 @@ router.post("/login", UsersController.login);
 router.get("/me", UsersController.validateAuthUser);
 router.get("/single/:id", UsersController.getSingleUser);
 router.post("/logout", UsersController.logout);
-router.put("/:userId", UsersController.editProfile);
+router.put("/edit-user/:userId", UsersController.editProfile);
 router.put("/restore-password", UsersController.sendEmail);
 router.get(
   "validate-token/:token",
