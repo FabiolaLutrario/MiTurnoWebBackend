@@ -14,6 +14,7 @@ router.get(
   UsersController.validateTokenToRestorePassword
 );
 router.post("/overwrite-password/:token", UsersController.overwritePassword);
+router.put("/confirm-email/:token", UsersController.confirmEmail);
 
 //Con permisos Admin:
 router.get("/", UsersController.getAllUsers);
