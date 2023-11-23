@@ -120,6 +120,22 @@ class UsersController {
       { where: { id }, returning: true }
     )
       .then(([rows, users]) => {
+        const payload = {
+          id: users[0].id,
+          fullName: users[0].full_name,
+          dni: users[0].dni,
+          email: users[0].email,
+          roleId: users[0].role_id,
+        };
+
+        const token = generateToken(payload, "1d");
+
+        res.cookie("token", token, {
+          sameSite: "none",
+          httpOnly: true,
+          secure: true,
+        });
+
         res.status(200).send(users[0]);
       })
       .catch((error) => {
