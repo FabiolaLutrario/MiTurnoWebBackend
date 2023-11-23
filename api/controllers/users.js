@@ -3,7 +3,6 @@ const { validateAuth } = require("../config/auth");
 const { validateToken } = require("../config/tokens");
 const { transporter } = require("../config/mailer");
 const User = require("../models/User");
-const Role = require("../models/Role");
 
 class UsersController {
   static register(req, res) {
@@ -29,7 +28,22 @@ class UsersController {
           dni: userArray[0].dni,
           roleId: userArray[0].role_id,
         };
-        res.status(201).send(payload);
+
+        const token = generateToken(payload, "10m");
+        userArray[0].token = token;
+        userArray[0].save().then(() => {
+          //Genera el link de recuperación de contraseña y lo envía por correo
+          const confirmURL = `http://localhost:3000/confirm-email/${token}`;
+          const info = transporter.sendMail({
+            from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
+            to: userArray[0].email,
+            subject: "Confirmación de correo ✔",
+            html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
+          });
+          info.then(() => {
+            res.status(201).send(payload);
+          });
+        });
       })
       .catch((error) => {
         console.error("Error when trying to register user:", error);
@@ -319,6 +333,22 @@ class UsersController {
       .catch((error) => {
         console.error("Error getting users:", error);
         return res.status(500).send("Internal Server Error");
+      });
+  }
+  static confirmEmail(req, res) {
+    const { token } = req.params;
+    User.update(
+      {
+        confirmation: true,
+        token: null,
+      },
+      { where: { token }, returning: true }
+    )
+      .then((user) =>
+        res.status(200).send(`Usuario ${user[1][0].id} confirmado`)
+      )
+      .catch((err) => {
+        res.status(500).send("error al confirmar usuario");
       });
   }
 }

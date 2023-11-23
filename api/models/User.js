@@ -60,6 +60,10 @@ User.init(
       type: Sequelize.TEXT,
       allowNull: true,
     },
+    confirmation: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   },
   { sequelize: db, modelName: "user" }
 );
