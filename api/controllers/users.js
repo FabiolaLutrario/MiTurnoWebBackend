@@ -113,12 +113,13 @@ class UsersController {
 
     User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
+        const user = users[0];
         const payload = {
-          id: users[0].id,
-          fullName: users[0].full_name,
-          dni: users[0].dni,
-          email: users[0].email,
-          roleId: users[0].role_id,
+          id: user.id,
+          fullName: user.full_name,
+          dni: user.dni,
+          email: user.email,
+          roleId: user.role_id,
         };
 
         const token = generateToken(payload, "1d");
