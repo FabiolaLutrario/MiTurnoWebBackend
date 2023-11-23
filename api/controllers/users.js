@@ -115,6 +115,7 @@ class UsersController {
       { where: { id }, returning: true }
     )
       .then(([rows, users]) => {
+        console.log(users);
         res.status(200).send(users[0]);
       })
       .catch((error) => {
