@@ -110,16 +110,26 @@ class UsersController {
 
   static editProfile(req, res) {
     const id = req.params.userId;
-    const { fullName, dni } = req.body;
 
-    User.update(
-      {
-        full_name: fullName,
-        dni,
-      },
-      { where: { id }, returning: true }
-    )
+    User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
+        const user = users[0];
+        const payload = {
+          id: user.id,
+          fullName: user.full_name,
+          dni: user.dni,
+          email: user.email,
+          roleId: user.role_id,
+        };
+
+        const token = generateToken(payload, "1d");
+
+        res.cookie("token", token, {
+          sameSite: "none",
+          httpOnly: true,
+          secure: true,
+        });
+
         res.status(200).send(users[0]);
       })
       .catch((error) => {
