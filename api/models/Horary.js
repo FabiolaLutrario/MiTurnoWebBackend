@@ -8,6 +8,7 @@ Horary.init(
     id: {
       type: Sequelize.TIME,
       primaryKey: true,
+      unique: true,
     },
   },
   { sequelize: db, modelName: "horary" }

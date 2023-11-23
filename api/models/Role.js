@@ -8,6 +8,7 @@ Role.init(
     id: {
       type: Sequelize.STRING,
       primaryKey: true,
+      unique: true,
     },
   },
   { sequelize: db, modelName: "role" }
