@@ -110,15 +110,8 @@ class UsersController {
 
   static editProfile(req, res) {
     const id = req.params.userId;
-    const { fullName, dni } = req.body;
 
-    User.update(
-      {
-        full_name: fullName,
-        dni,
-      },
-      { where: { id }, returning: true }
-    )
+    User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
         const payload = {
           id: users[0].id,
