@@ -59,7 +59,7 @@ class UsersController {
         if (!user) return res.sendStatus(401);
         user.validatePassword(password).then((isValid) => {
           if (!isValid) return res.sendStatus(401);
-          if (!user.confirmation) return res.status(401).send("Not confirmed");
+          if (!user.confirmation) return res.status(412).send("Not confirmed");
           const payload = {
             id: user.id,
             fullName: user.full_name,
