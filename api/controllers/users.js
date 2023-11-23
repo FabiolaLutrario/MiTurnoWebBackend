@@ -29,7 +29,7 @@ class UsersController {
           roleId: userArray[0].role_id,
         };
 
-        const token = generateToken(payload, "10m");
+        const token = generateToken(payload, "10d");
         userArray[0].token = token;
         userArray[0].save().then(() => {
           //Genera el link de recuperación de contraseña y lo envía por correo
