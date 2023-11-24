@@ -1,7 +1,7 @@
-const { generateToken } = require("../config/tokens");
-const { validateAuth } = require("../config/auth");
-const { validateToken } = require("../config/tokens");
-const { transporter } = require("../config/mailer");
+const { generateToken } = require("../config/tokens.config");
+const { validateAuth } = require("../config/auth.config");
+const { validateToken } = require("../config/tokens.config");
+const { transporter } = require("../config/mailer.config");
 const User = require("../models/User.models");
 const Role = require("../models/Role.models");
 const { Turn, BranchOffice } = require("../models/index.models");

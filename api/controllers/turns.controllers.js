@@ -1,4 +1,4 @@
-const { transporter } = require("../config/mailer");
+const { transporter } = require("../config/mailer.config");
 const Turn = require("../models/Turn.models");
 const User = require("../models/User.models");
 const BranchOffice = require("../models/BranchOffice.models");
