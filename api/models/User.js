@@ -68,15 +68,15 @@ User.init(
   { sequelize: db, modelName: "user" }
 );
 
-User.beforeSave((user) => {
-  const salt = bcrypt.genSaltSync();
+// User.beforeSave((user) => {
+//   const salt = bcrypt.genSaltSync();
 
-  user.salt = salt;
+//   user.salt = salt;
 
-  return user.hash(user.password, salt).then((hash) => {
-    user.password = hash;
-  });
-});
+//   return user.hash(user.password, salt).then((hash) => {
+//     user.password = hash;
+//   });
+// });
 
 User.beforeCreate((user) => {
   const salt = bcrypt.genSaltSync();
