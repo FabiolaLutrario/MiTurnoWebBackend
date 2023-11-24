@@ -1,5 +1,5 @@
 const express = require("express");
-const TurnsController = require("../controllers/turns");
+const TurnsController = require("../controllers/turns.controllers");
 const router = express.Router();
 
 router.post("/:userId", TurnsController.generateTurn);

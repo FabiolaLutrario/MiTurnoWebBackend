@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const BranchOfficesControler = require("../controllers/branchOffices");
+const BranchOfficesControler = require("../controllers/branchOffices.controllers");
 
 router.post("/create", BranchOfficesControler.create);
 router.get("/single/:id", BranchOfficesControler.single);

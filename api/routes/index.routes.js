@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const users = require("./users");
-const turns = require("./turns");
-const roles = require("./roles");
-const branchOffices = require("./branchOffices");
-const horaries = require("./horaries");
+const users = require("./users.routes");
+const turns = require("./turns.routes");
+const roles = require("./roles.routes");
+const branchOffices = require("./branchOffices.routes");
+const horaries = require("./horaries.routes");
 
 router.use("/users", users);
 router.use("/turns", turns);

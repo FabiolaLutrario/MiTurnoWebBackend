@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
 const bcrypt = require("bcrypt");
 const db = require("./db");
-const Role = require("./Role");
-const BranchOffice = require("./BranchOffice");
+const Role = require("./Role.models");
+const BranchOffice = require("./BranchOffice.models");
 
 class User extends Sequelize.Model {
   hash(password, salt) {
@@ -77,15 +77,5 @@ User.beforeSave((user) => {
     user.password = hash;
   });
 });
-
-// User.beforeCreate((user) => {
-//   const salt = bcrypt.genSaltSync();
-
-//   user.salt = salt;
-
-//   return user.hash(user.password, salt).then((hash) => {
-//     user.password = hash;
-//   });
-// });
 
 module.exports = User;

@@ -1,6 +1,6 @@
-const Horary = require("../models/Horary");
-const Turn = require("../models/Turn");
-const BranchOffice = require("../models/BranchOffice");
+const Horary = require("../models/Horary.models");
+const Turn = require("../models/Turn.models");
+const BranchOffice = require("../models/BranchOffice.models");
 const { Op } = require("sequelize");
 
 class HoraryController {

@@ -1,7 +1,7 @@
 const { transporter } = require("../config/mailer");
-const Turn = require("../models/Turn");
-const User = require("../models/User");
-const BranchOffice = require("../models/BranchOffice");
+const Turn = require("../models/Turn.models");
+const User = require("../models/User.models");
+const BranchOffice = require("../models/BranchOffice.models");
 const moment = require("moment");
 const { Op } = require("sequelize");
 
@@ -84,6 +84,7 @@ class TurnsController {
       where: {
         confirmation: req.params.confirmation,
       },
+      include: { model: BranchOffice, as: "branchOffice" },
     })
       .then((turns) => {
         if (!turns)
@@ -103,6 +104,7 @@ class TurnsController {
       where: {
         id: req.params.id,
       },
+      include: { model: BranchOffice, as: "branchOffice" },
     })
       .then((turn) => {
         if (!turn) return res.sendStatus(404);

@@ -2,9 +2,9 @@ const { generateToken } = require("../config/tokens");
 const { validateAuth } = require("../config/auth");
 const { validateToken } = require("../config/tokens");
 const { transporter } = require("../config/mailer");
-const User = require("../models/User");
-const Role = require("../models/Role");
-const { Turn } = require("../models");
+const User = require("../models/User.models");
+const Role = require("../models/Role.models");
+const { Turn, BranchOffice } = require("../models/index.models");
 
 class UsersController {
   static register(req, res) {
@@ -99,6 +99,7 @@ class UsersController {
       where: {
         user_id: id,
       },
+      include: { model: BranchOffice, as: "branchOffice" },
     })
       .then((turns) => {
         User.findOne({ where: { id } }).then((user) => {
@@ -307,7 +308,7 @@ class UsersController {
   static registerOperator(req, res) {
     const { fullName, dni, email, password, branch_office_id } = req.body;
 
-    if (!fullName || !dni || !email || !password) {
+    if (!fullName || !dni || !email || !password || !branch_office_id) {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
@@ -342,6 +343,12 @@ class UsersController {
     User.findAll({
       where: { role_id: "Operador" },
       attributes: { exclude: ["password", "salt", "token"] },
+      include: [
+        {
+          model: BranchOffice,
+          as: "branchOffice",
+        },
+      ],
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);

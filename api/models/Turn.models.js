@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
 const db = require("./db");
 const moment = require("moment");
-const BranchOffice = require("./BranchOffice");
-const Horary = require("./Horary");
-const User = require("./User");
+const BranchOffice = require("./BranchOffice.models");
+const Horary = require("./Horary.models");
+const User = require("./User.models");
 
 class Turn extends Sequelize.Model {
   static turnsByUser(userId) {

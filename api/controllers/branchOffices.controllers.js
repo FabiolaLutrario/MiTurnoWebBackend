@@ -1,4 +1,4 @@
-const { BranchOffice } = require("../models");
+const { BranchOffice } = require("../models/index.models");
 
 class BranchOfficesController {
   static create(req, res) {

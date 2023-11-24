@@ -1,8 +1,8 @@
-const User = require("./User");
-const Turn = require("./Turn");
-const BranchOffice = require("./BranchOffice");
-const Horary = require("./Horary");
-const Role = require("./Role");
+const User = require("./User.models");
+const Turn = require("./Turn.models");
+const BranchOffice = require("./BranchOffice.models");
+const Horary = require("./Horary.models");
+const Role = require("./Role.models");
 
 Turn.belongsTo(User, { foreignKey: "user_id", as: "user" });
 Turn.belongsTo(Horary, { foreignKey: "horary_id", as: "horary" });
@@ -12,7 +12,7 @@ Turn.belongsTo(BranchOffice, {
 });
 User.belongsTo(BranchOffice, {
   foreignKey: "branch_office_id",
-  as: "branch_office",
+  as: "branchOffice",
 });
 User.belongsTo(Role, { foreignKey: "role_id", as: "role" });
 

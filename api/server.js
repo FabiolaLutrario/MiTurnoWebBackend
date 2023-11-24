@@ -4,8 +4,8 @@ const logger = require("morgan");
 const cors = require("cors");
 require("dotenv").config();
 const db = require("./models/db");
-const { User, Turn, BranchOffice } = require("./models");
-const routes = require("./routes/index");
+const { User, Turn, BranchOffice } = require("./models/index.models");
+const routes = require("./routes/index.routes");
 
 const app = express();
 app.use(express.json());
