@@ -13,38 +13,39 @@ class UsersController {
     if (!fullName || !dni || !email || !password) {
       return res.status(400).send({ error: "All fields are required!" });
     }
+
+    const payload = {
+      fullName: fullName,
+      email: email,
+      dni: dni,
+      roleId: "customer",
+    };
+
+    const token = generateToken(payload, "10d");
+
     User.findOrCreate({
       where: { email },
       defaults: {
         full_name: fullName,
         dni,
         password,
+        token: token,
         role_id: "customer",
       },
     })
       .then((userArray) => {
         if (!userArray[1]) return res.status(409).send("Email already exists");
-        const payload = {
-          fullName: userArray[0].full_name,
-          email: userArray[0].email,
-          dni: userArray[0].dni,
-          roleId: userArray[0].role_id,
-        };
 
-        const token = generateToken(payload, "10d");
-        userArray[0].token = token;
-        userArray[0].save().then(() => {
-          //Genera el link de recuperación de contraseña y lo envía por correo
-          const confirmURL = `http://localhost:3000/confirm-email/${token}`;
-          const info = transporter.sendMail({
-            from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
-            to: userArray[0].email,
-            subject: "Confirmación de correo ✔",
-            html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
-          });
-          info.then(() => {
-            res.status(201).send(payload);
-          });
+        //Genera el link de recuperación de contraseña y lo envía por correo
+        const confirmURL = `http://localhost:3000/confirm-email/${token}`;
+        const info = transporter.sendMail({
+          from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
+          to: userArray[0].email,
+          subject: "Confirmación de correo ✔",
+          html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
+        });
+        info.then(() => {
+          res.status(201).send(payload);
         });
       })
       .catch((error) => {
