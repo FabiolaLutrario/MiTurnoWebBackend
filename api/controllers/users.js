@@ -107,6 +107,7 @@ class UsersController {
             fullName: user.full_name,
             dni: user.dni,
             email: user.email,
+            role_id: user.role_id,
             turns: turns,
           };
           res.status(200).send(payload);
@@ -245,7 +246,7 @@ class UsersController {
 
   static getAllUsers(req, res) {
     User.findAll({
-      attributes: { exclude: ["password", "salt", "token", "role_id"] },
+      attributes: { exclude: ["password", "salt", "token"] },
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);
