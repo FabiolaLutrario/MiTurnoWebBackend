@@ -22,10 +22,10 @@ Role.sync()
   .then((count) => {
     if (count === 0) {
       const rolesToCreate = [
-        { id: "Administrador" },
-        { id: "Super Administrador" },
-        { id: "Operador" },
-        { id: "Cliente" },
+        { id: "admin" },
+        { id: "super admin" },
+        { id: "operator" },
+        { id: "client" },
       ];
       return Role.bulkCreate(rolesToCreate);
     }
