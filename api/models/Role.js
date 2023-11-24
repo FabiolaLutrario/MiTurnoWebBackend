@@ -25,7 +25,7 @@ Role.sync()
         { id: "admin" },
         { id: "super admin" },
         { id: "operator" },
-        { id: "client" },
+        { id: "customer" },
       ];
       return Role.bulkCreate(rolesToCreate);
     }

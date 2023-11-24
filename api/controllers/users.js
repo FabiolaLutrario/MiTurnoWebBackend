@@ -19,7 +19,7 @@ class UsersController {
         full_name: fullName,
         dni,
         password,
-        role_id: "Cliente",
+        role_id: "customer",
       },
     })
       .then((userArray) => {
