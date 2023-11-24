@@ -55,6 +55,7 @@ User.init(
     dni: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
     token: {
       type: Sequelize.TEXT,
