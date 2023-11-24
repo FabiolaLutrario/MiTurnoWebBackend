@@ -58,7 +58,7 @@ class UsersController {
 
     User.findOne({ where: { email } })
       .then((user) => {
-        if (!user) return res.sendStatus(401);
+        if (!user) return res.sendStatus(402);
         user.validatePassword(password).then((isValid) => {
           if (!isValid) return res.sendStatus(401);
           if (!user.confirmation) return res.status(412).send("Not confirmed");
