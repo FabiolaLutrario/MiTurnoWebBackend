@@ -45,13 +45,10 @@ Turn.init(
       type: Sequelize.TIME,
       allowNull: false,
     },
-    /*     Número de télefono a preferencia del 
-    usuario al momento de generar el turno */
-    phone_number: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
     confirmation: {
+      type: Sequelize.STRING,
+    },
+    reason_cancellation: {
       type: Sequelize.STRING,
     },
     user_id: {

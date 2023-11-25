@@ -8,9 +8,9 @@ const { Op } = require("sequelize");
 class TurnsController {
   static generateTurn(req, res) {
     const currentDate = moment();
-    const { turnDate, horaryId, phoneNumber, branchOfficeId } = req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
+    const { turnDate, horaryId, branchOfficeId } = req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
 
-    if (!turnDate || !horaryId || !phoneNumber || !branchOfficeId) {
+    if (!turnDate || !horaryId || !branchOfficeId) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
@@ -64,7 +64,6 @@ class TurnsController {
             Turn.create({
               turn_date: turnDate,
               horary_id: horaryId,
-              phone_number: phoneNumber,
               branch_office_id: branchOfficeId,
               user_id: user.id,
             }).then((turn) => {
@@ -118,9 +117,11 @@ class TurnsController {
 
   static changeTurnConfirmation(req, res) {
     const { id } = req.params;
+    const {confirmation} = req.body.confirmation
+    const {reasonCancellation} = req.body.reasonCancellation
 
     Turn.update(
-      { confirmation: req.body.confirmation },
+      { confirmation,  reason_cancellation: reasonCancellation},
       { where: { id }, returning: true }
     )
       .then(([rows, turns]) => {
