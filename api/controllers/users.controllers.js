@@ -8,9 +8,9 @@ const { Turn, BranchOffice } = require("../models/index.models");
 
 class UsersController {
   static register(req, res) {
-    const { fullName, dni, email, password } = req.body;
+    const { fullName, dni, email, password, phoneNumber } = req.body;
 
-    if (!fullName || !dni || !email || !password) {
+    if (!fullName || !dni || !email || !phoneNumber || !password) {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
@@ -18,6 +18,7 @@ class UsersController {
       fullName: fullName,
       email: email,
       dni: dni,
+      phoneNumber: phoneNumber,
       roleId: "customer",
     };
 
@@ -30,6 +31,7 @@ class UsersController {
         dni,
         password,
         token: token,
+        phone_number: phoneNumber,
         role_id: "customer",
       },
     })
@@ -68,6 +70,7 @@ class UsersController {
             fullName: user.full_name,
             dni: user.dni,
             email: user.email,
+            phoneNumber: user.phone_number,
           };
 
           const token = generateToken(payload, "1d");
@@ -109,6 +112,7 @@ class UsersController {
             fullName: user.full_name,
             dni: user.dni,
             email: user.email,
+            phoneNumber: user.phone_number,
             role_id: user.role_id,
             turns: turns,
           };
@@ -137,6 +141,7 @@ class UsersController {
           fullName: user.full_name,
           dni: user.dni,
           email: user.email,
+          phoneNumber: user.phone_number,
           roleId: user.role_id,
         };
 
@@ -168,6 +173,7 @@ class UsersController {
           id: user.id,
           fullName: user.full_name,
           dni: user.dni,
+          phoneNumber: user.phone_number,
           email: user.email,
         };
 
@@ -306,9 +312,9 @@ class UsersController {
       });
   }
   static registerOperator(req, res) {
-    const { fullName, dni, email, password, branch_office_id } = req.body;
+    const { fullName, dni, email, password, branch_office_id, phoneNumber } = req.body;
 
-    if (!fullName || !dni || !email || !password || !branch_office_id) {
+    if (!fullName || !dni || !email || !password || !phoneNumber || !branch_office_id) {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
@@ -318,6 +324,7 @@ class UsersController {
         full_name: fullName,
         dni,
         password,
+        phone_number: phoneNumber,
         branch_office_id,
         role_id: "Operador",
       },
@@ -329,6 +336,7 @@ class UsersController {
           fullName: operatorArray[0].full_name,
           email: operatorArray[0].email,
           dni: operatorArray[0].dni,
+          phoneNumber: operatorArray[0].phone_number,
           roleId: operatorArray[0].role_id,
           branch_office_id: operatorArray[0].branch_office_id,
         };

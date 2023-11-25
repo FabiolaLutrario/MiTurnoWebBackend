@@ -65,6 +65,10 @@ User.init(
       type: Sequelize.BOOLEAN,
       defaultValue: false,
     },
+    phone_number: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   },
   { sequelize: db, modelName: "user" }
 );
