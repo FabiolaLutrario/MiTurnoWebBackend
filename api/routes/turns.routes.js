@@ -4,8 +4,8 @@ const router = express.Router();
 
 router.post("/:userId", TurnsController.generateTurn);
 router.get(
-  "/turns-by-confirmation/:confirmation",
-  TurnsController.getAllTurnsByConfirmation
+  "/by-confirmation-and-branch-office/:confirmation/:branchOfficeId",
+  TurnsController.getAllTurnsByConfirmationAndBranchOfficeId
 );
 router.get("/:id", TurnsController.getTurn);
 router.put("/turn-confirmation/:id", TurnsController.changeTurnConfirmation);

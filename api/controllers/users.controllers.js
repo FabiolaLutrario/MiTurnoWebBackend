@@ -71,6 +71,8 @@ class UsersController {
             dni: user.dni,
             email: user.email,
             phoneNumber: user.phone_number,
+            roleId:user.role_id,
+            branchOfficeId:user.branch_office_id,
           };
 
           const token = generateToken(payload, "1d");
@@ -113,7 +115,8 @@ class UsersController {
             dni: user.dni,
             email: user.email,
             phoneNumber: user.phone_number,
-            role_id: user.role_id,
+            roleId: user.role_id,
+            branchOfficeId: user.branch_office_id,
             turns: turns,
           };
           res.status(200).send(payload);
@@ -312,11 +315,22 @@ class UsersController {
       });
   }
   static registerOperator(req, res) {
-    const { fullName, dni, email, password, branch_office_id, phoneNumber } = req.body;
+    const { fullName, dni, email, password, branchOfficeId, phoneNumber } = req.body;
 
-    if (!fullName || !dni || !email || !password || !phoneNumber || !branch_office_id) {
+    if (!fullName || !dni || !email || !password || !phoneNumber || !branchOfficeId) {
       return res.status(400).send({ error: "All fields are required!" });
     }
+
+    const payload = {
+      fullName: fullName,
+      email: email,
+      dni: dni,
+      phoneNumber: phoneNumber,
+      roleId: "operator",
+      branchOfficeId: branchOfficeId,
+    };
+
+    const token = generateToken(payload, "10d");
 
     User.findOrCreate({
       where: { email },
@@ -324,32 +338,36 @@ class UsersController {
         full_name: fullName,
         dni,
         password,
+        token: token,
         phone_number: phoneNumber,
-        branch_office_id,
-        role_id: "Operador",
+        branch_office_id:branchOfficeId,
+        role_id: "operator",
       },
     })
       .then((operatorArray) => {
         if (!operatorArray[1])
           return res.status(409).send("Email already exists");
-        const payload = {
-          fullName: operatorArray[0].full_name,
-          email: operatorArray[0].email,
-          dni: operatorArray[0].dni,
-          phoneNumber: operatorArray[0].phone_number,
-          roleId: operatorArray[0].role_id,
-          branch_office_id: operatorArray[0].branch_office_id,
-        };
-        res.status(201).send(payload);
-      })
-      .catch((error) => {
-        console.error("Error when trying to register operator:", error);
-        return res.status(500).send("Internal Server Error");
-      });
+
+                //Genera el link de recuperación de contraseña y lo envía por correo
+                const confirmURL = `http://localhost:3000/confirm-email/${token}`;
+                const info = transporter.sendMail({
+                  from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
+                  to: operatorArray[0].email,
+                  subject: "Confirmación de correo ✔",
+                  html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
+                });
+                info.then(() => {
+                  res.status(201).send(payload);
+                });
+              })
+              .catch((error) => {
+                console.error("Error when trying to register user:", error);
+                return res.status(500).send("Internal Server Error");
+              });
   }
   static getOperators(req, res) {
     User.findAll({
-      where: { role_id: "Operador" },
+      where: { role_id: "operator" },
       attributes: { exclude: ["password", "salt", "token"] },
       include: [
         {
