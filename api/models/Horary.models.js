@@ -23,10 +23,11 @@ Horary.sync()
     const horariesToCreate = [];
     if (count === 0) {
       for (let i = 7; i <= 21; i++) {
-        for (let j = 0; j <= 45; i += 15) {
-          horariesToCreate.push({
-            id: `${i < 10 ? `0${i}` : i}:${(j = 0 ? `00` : j)}:00`,
-          });
+        for (let j = 0; j <= 45; j += 15) {
+          if (!(i === 7 && (j === 0 || j === 15)) && !(i === 21 && j === 45))
+            horariesToCreate.push({
+              id: `${i < 10 ? `0${i}` : i}:${j === 0 ? `00` : j}:00`,
+            });
         }
       }
       return Horary.bulkCreate(horariesToCreate);

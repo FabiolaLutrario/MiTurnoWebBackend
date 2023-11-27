@@ -78,7 +78,7 @@ class HoraryController {
       });
   }
   static allHoraries(req, res) {
-    Horary.findAll().then((horaries) => {
+    Horary.findAll({ attributes: ["id"] }).then((horaries) => {
       res.status(200).send(horaries);
     });
   }
