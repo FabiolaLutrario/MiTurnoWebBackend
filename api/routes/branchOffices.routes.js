@@ -7,5 +7,6 @@ router.get("/single/:id", BranchOfficesControler.single);
 router.get("/all", BranchOfficesControler.all);
 router.put("/edit/:id", BranchOfficesControler.edit);
 router.delete("/delete/:id", BranchOfficesControler.delete);
+router.get("/available-days/:id", BranchOfficesControler.availableDays);
 
 module.exports = router;
