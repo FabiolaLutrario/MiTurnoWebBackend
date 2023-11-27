@@ -77,5 +77,10 @@ class HoraryController {
         return res.status(500).send("Internal Server Error");
       });
   }
+  static allHoraries(req, res) {
+    Horary.findAll({ attributes: ["id"] }).then((horaries) => {
+      res.status(200).send(horaries);
+    });
+  }
 }
 module.exports = HoraryController;
