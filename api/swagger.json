@@ -1,0 +1,259 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Mi Turno Web API",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5001"
+    }
+  ],
+  "tags": [
+    {
+      "name": "users",
+      "description": "Operaciones relacionadas con los usuarios."
+    },
+    {
+      "name": "turns",
+      "description": "Operaciones relacionadas con los turnos."
+    },
+    {
+      "name": "branch-offices",
+      "description": "Operaciones relacionadas con las sucursales."
+    },
+    {
+      "name": "roles",
+      "description": "Operaciones relacionada con los roles de los usuarios."
+    },
+    {
+      "name": "horaries",
+      "description": "Operaciones relacionada con los horarios de los turnos."
+    }
+  ],
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "description": "Nombre y apellido del usuario."
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico del usuario."
+          },
+          "password": {
+            "type": "string",
+            "description": "Contraseña del usuario."
+          },
+          "salt": {
+            "type": "string",
+            "description": "Código salt asociado a la contraseña del usuario."
+          },
+          "dni": {
+            "type": "string",
+            "description": "Documento de identidad del usuario."
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "Número de teléfono del usuario."
+          },
+          "token": {
+            "type": "string",
+            "description": "Token para recuperación de contraseña."
+          },
+          "confirmation": {
+            "type": "boolean",
+            "description": "Confirmación de alta de cuenta del usuario."
+          },
+          "role_id": {
+            "type": "string",
+            "description": "Rol del usuario."
+          },
+          "branch_office_id": {
+            "type": "integer",
+            "description": "Sucursal a la cual pertenece un usuario con rol 'operador'."
+          }
+        },
+        "required": [
+          "full_name",
+          "email",
+          "password",
+          "dni",
+          "phone_number",
+          "role_id"
+        ],
+        "example": {
+          "full_name": "Alan Turing",
+          "email": "alan@email.com",
+          "password": "Hola123456",
+          "dni": "123456789",
+          "phone_number": "2231234567"
+        }
+      },
+      "Turn": {
+        "type": "object",
+        "properties": {
+          "turn_date": {
+            "type": "dateonly",
+            "description": "Fecha del turno."
+          },
+          "reservation_date": {
+            "type": "dateonly",
+            "description": "Día en el cual se reservó el turno."
+          },
+          "reservation_time": {
+            "type": "time",
+            "description": "Hora en la cual se reservó el turno."
+          },
+          "confirmation": {
+            "type": "string",
+            "description": "Estado en el cuál se encuentra el turno (confirmed, pending, cancelled)."
+          },
+          "reason_cancellation": {
+            "type": "string",
+            "description": "Si el usuario cancela un turno motivo por el cual lo canceló."
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "Id del usuario."
+          },
+          "branch_office_id": {
+            "type": "integer",
+            "description": "Sucursal en la cual el usuario reservó el turno."
+          },
+          "horary_id": {
+            "type": "time",
+            "description": "Hora del turno."
+          }
+        },
+        "required": [
+          "turn_date",
+          "reservation_date",
+          "reservation_time",
+          "user_id",
+          "branch_office_id",
+          "horary_id"
+        ],
+        "example": {
+          "turn_date": "2023-11-28",
+          "reservation_date": "2023-11-25",
+          "reservation_time": "21:12:00",
+          "user_id": 1,
+          "branch_office_id": 1,
+          "horary_id": "10:15:00"
+        }
+      },
+      "BranchOffice": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre de la sucursal"
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo electrónico de la sucursal."
+          },
+          "boxes": {
+            "type": "integer",
+            "description": "Cantidad de cajas para atención al público de la sucursal."
+          },
+          "opening_time": {
+            "type": "time",
+            "description": "Horario de apertura al público de la sucursal."
+          },
+          "closing_time": {
+            "type": "time",
+            "description": "Horario de cierre al público de la sucursal."
+          }
+        },
+        "required": ["name", "email", "boxes", "opening_time", "closing_time"],
+        "example": {
+          "name": "Avellaneda",
+          "email": "avellanedasucursal@email.com",
+          "boxes": 3,
+          "opening_time": "10:00:00",
+          "closing_time": "15:00:00"
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Nombre del rol del usuario."
+          }
+        },
+        "required": ["id"],
+        "example": {
+          "id": "client"
+        }
+      },
+      "Horary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "time",
+            "description": "Horarios de turnos."
+          }
+        },
+        "required": ["id"],
+        "example": {
+          "id": "10:15:00"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/users/register": {
+      "post": {
+        "tags": ["users"],
+        "summary": "Registrar nuevo cliente.",
+        "description": "Crea un nuevo usuario con el rol client con los datos proporcionados.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "example": {
+                    "full_name": "Alan Turing",
+                    "email": "alan@email.com",
+                    "dni": "123456789",
+                    "phone_number": "2231234567",
+                    "role_id": "customer"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "All fields are required!"
+          },
+          "409": {
+            "description": "Email already exists"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}
