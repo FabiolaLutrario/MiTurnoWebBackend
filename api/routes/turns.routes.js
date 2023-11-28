@@ -2,9 +2,9 @@ const express = require("express");
 const TurnsController = require("../controllers/turns.controllers");
 const router = express.Router();
 
-router.post("/:userId", TurnsController.generateTurn);
+router.post("/:user_id", TurnsController.generateTurn);
 router.get(
-  "/by-confirmation-and-branch-office/:confirmation/:branchOfficeId",
+  "/by-confirmation-and-branch-office/:confirmation/:branch_office_id",
   TurnsController.getAllTurnsByConfirmationAndBranchOfficeId
 );
 router.get("/:id", TurnsController.getTurn);

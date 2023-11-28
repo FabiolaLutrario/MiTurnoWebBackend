@@ -3,7 +3,7 @@ const HorariesController = require("../controllers/horaries.controllers");
 const router = express.Router();
 
 router.get(
-  "/:date/:branchOfficeId",
+  "/:date/:branch_office_id",
   HorariesController.getHorariesByDateAndHoraryBranchOffice
 );
 

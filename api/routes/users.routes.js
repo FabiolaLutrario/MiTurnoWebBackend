@@ -7,7 +7,7 @@ router.post("/login", UsersController.login);
 router.get("/me", UsersController.validateAuthUser);
 router.get("/single/:id", UsersController.getSingleUser);
 router.post("/logout", UsersController.logout);
-router.put("/edit-user/:userId", UsersController.editProfile);
+router.put("/edit-user/:user_id", UsersController.editProfile);
 router.put("/restore-password", UsersController.sendEmail);
 router.get(
   "validate-token/:token",
@@ -18,7 +18,7 @@ router.put("/confirm-email/:token", UsersController.confirmEmail);
 
 //Con permisos Admin:
 router.get("/", UsersController.getAllUsers);
-router.put("/promote/:userId", UsersController.promoteOrRevokePermissions);
+router.put("/promote/:user_id", UsersController.promoteOrRevokePermissions);
 router.delete("/user/:id", UsersController.deleteUser);
 router.post("/register-operator", UsersController.registerOperator);
 router.get("/operators", UsersController.getOperators);
