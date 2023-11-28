@@ -8,6 +8,7 @@ const { Op } = require("sequelize");
 class TurnsController {
   static generateTurn(req, res) {
     const currentDate = moment();
+    const currentTime = moment().format("HH:mm:ss");
     const { turn_date, horary_id, branch_office_id } = req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
 
     if (!turn_date || !horary_id || !branch_office_id) {
@@ -65,6 +66,9 @@ class TurnsController {
               Turn.create({
                 turn_date,
                 horary_id,
+                confirmation_id: "pending",
+                reservation_date: currentDate,
+                reservation_time: currentTime,
                 branch_office_id,
                 user_id: user.id,
               }).then((turn) => {
@@ -83,7 +87,7 @@ class TurnsController {
   static getAllTurnsByConfirmationAndBranchOfficeId(req, res) {
     Turn.findAll({
       where: {
-        confirmation: req.params.confirmation,
+        confirmation_id: req.params.confirmation_id,
         branch_office_id: req.params.branch_office_id,
       },
       include: [
@@ -95,7 +99,7 @@ class TurnsController {
         if (!turns)
           res
             .status(404)
-            .send("There are no turns in state: ", req.params.confirmation);
+            .send("There are no turns in state: ", req.params.confirmation_id);
         return res.status(200).send(turns);
       })
       .catch((error) => {
@@ -123,11 +127,17 @@ class TurnsController {
 
   static changeTurnConfirmation(req, res) {
     const { id } = req.params;
-    const { confirmation } = req.body.confirmation;
+    const { confirmation_id } = req.body.confirmation_id;
     const { reason_cancellation } = req.body.reason_cancellation;
 
+    if (!confirmation_id) {
+      return res
+        .status(400)
+        .send({ error: "Confirmation status is required!" });
+    }
+
     Turn.update(
-      { confirmation, reason_cancellation },
+      { confirmation_id, reason_cancellation },
       { where: { id }, returning: true }
     )
       .then(([rows, turns]) => {

@@ -18,8 +18,8 @@ router.put("/confirm-email/:token", UsersController.confirmEmail);
 
 //Con permisos Admin:
 router.get("/", UsersController.getAllUsers);
-router.put("/promote/:user_id", UsersController.promoteOrRevokePermissions);
-router.delete("/user/:id", UsersController.deleteUser);
+router.put("/change-role/:user_id", UsersController.changeRole);
+router.delete("/:id", UsersController.deleteUser);
 router.post("/register-operator", UsersController.registerOperator);
 router.get("/operators", UsersController.getOperators);
 

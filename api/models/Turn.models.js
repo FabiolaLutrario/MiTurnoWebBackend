@@ -4,6 +4,7 @@ const moment = require("moment");
 const BranchOffice = require("./BranchOffice.models");
 const Horary = require("./Horary.models");
 const User = require("./User.models");
+const Confirmation = require("./Confirmation.models");
 
 class Turn extends Sequelize.Model {
   static turnsByUser(userId) {
@@ -45,8 +46,13 @@ Turn.init(
       type: Sequelize.TIME,
       allowNull: false,
     },
-    confirmation: {
+    confirmation_id: {
       type: Sequelize.STRING,
+      allowNull: false,
+      references: {
+        model: Confirmation,
+        key: "id",
+      },
     },
     reason_cancellation: {
       type: Sequelize.STRING,
@@ -78,20 +84,5 @@ Turn.init(
   },
   { sequelize: db, modelName: "turn" }
 );
-
-/* Al momento de guardar el turno captura la fecha y hora actual y la guarda en reservationDate y 
-reservationTime respectivamente*/
-Turn.beforeValidate((turn) => {
-  const currentDate = new Date();
-
-  // Obtiene la hora actual en el formato HH:mm:ss
-  const currentTime = moment().format("HH:mm:ss");
-
-  turn.confirmation = "pending";
-  turn.reservation_date = currentDate;
-  turn.reservation_time = currentTime;
-
-  return turn;
-});
 
 module.exports = Turn;

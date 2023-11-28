@@ -2,8 +2,16 @@ const { BranchOffice } = require("../models/index.models");
 
 class BranchOfficesController {
   static create(req, res) {
-    const { name, boxes, email, opening_time, closing_time } = req.body;
-    if (!name || !boxes || !email || !opening_time || !closing_time) {
+    const { name, boxes, email, phone_number, opening_time, closing_time } =
+      req.body;
+    if (
+      !name ||
+      !boxes ||
+      !email ||
+      !phone_number ||
+      !opening_time ||
+      !closing_time
+    ) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
@@ -12,6 +20,7 @@ class BranchOfficesController {
       name,
       boxes,
       email,
+      phone_number,
       opening_time,
       closing_time,
     })
@@ -46,6 +55,20 @@ class BranchOfficesController {
   }
   static edit(req, res) {
     const id = req.params.id;
+    const { name, boxes, email, phone_number, opening_time, closing_time } =
+      req.body;
+    if (
+      !name ||
+      !boxes ||
+      !email ||
+      !phone_number ||
+      !opening_time ||
+      !closing_time
+    ) {
+      return res
+        .status(400)
+        .send({ error: "Todos los campos son obligatorios" });
+    }
     BranchOffice.update(req.body, { where: { id }, returning: true })
       .then(([rows, branch_offices]) => {
         res.send(branch_offices[0]);
