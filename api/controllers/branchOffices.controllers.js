@@ -1,4 +1,6 @@
-const { BranchOffice } = require("../models/index.models");
+const { BranchOffice, Turn } = require("../models/index.models");
+const moment = require("moment");
+const daysTester = require("../utils/daysTester");
 
 class BranchOfficesController {
   static create(req, res) {
@@ -88,6 +90,16 @@ class BranchOfficesController {
         console.error("Error when trying to delete branch office:", error);
         return res.status(500).send("Internal Server Error");
       });
+  }
+  static async unavailableDays(req, res) {
+    const id = req.params.id;
+    BranchOffice.findByPk(id).then((branch) => {
+      const maxTurns = daysTester.createMaxTurns(branch);
+      const daysToTest = daysTester.createDays();
+      daysTester.testDays(daysToTest, maxTurns).then((unavailableDays) => {
+        res.status(200).send(unavailableDays);
+      });
+    });
   }
 }
 

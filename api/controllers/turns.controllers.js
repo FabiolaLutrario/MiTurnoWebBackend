@@ -86,7 +86,7 @@ class TurnsController {
 
   static getAllTurnsByConfirmationAndBranchOfficeId(req, res) {
     Turn.findAll({
-      where: {
+
         confirmation_id: req.params.confirmation_id,
         branch_office_id: req.params.branch_office_id,
       },
@@ -127,6 +127,7 @@ class TurnsController {
 
   static changeTurnConfirmation(req, res) {
     const { id } = req.params;
+
     const { confirmation_id } = req.body.confirmation_id;
     const { reason_cancellation } = req.body.reason_cancellation;
 
@@ -148,5 +149,15 @@ class TurnsController {
         return res.status(500).send("Internal Server Error");
       });
   }
+  static all(req, res) {
+    Turn.findAll()
+      .then((turns) => {
+        res.status(200).send(turns);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
+      });
+  }
+
 }
 module.exports = TurnsController;
