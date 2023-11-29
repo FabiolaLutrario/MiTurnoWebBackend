@@ -127,6 +127,7 @@ class TurnsController {
 
   static changeTurnConfirmation(req, res) {
     const { id } = req.params;
+
     const { confirmation_id } = req.body.confirmation_id;
     const { reason_cancellation } = req.body.reason_cancellation;
 
@@ -146,6 +147,15 @@ class TurnsController {
       .catch((error) => {
         console.error("Error when trying to update turn confirmation:", error);
         return res.status(500).send("Internal Server Error");
+      });
+  }
+  static all(req, res) {
+    Turn.findAll()
+      .then((turns) => {
+        res.status(200).send(turns);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
       });
   }
 }
