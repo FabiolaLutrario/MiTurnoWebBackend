@@ -9,7 +9,7 @@ class HoraryController {
       where: {
         branch_office_id: req.params.branch_office_id,
         turn_date: req.params.date,
-        confirmation: "pending",
+        confirmation_id: "pending",
       },
     })
       .then((turns) => {

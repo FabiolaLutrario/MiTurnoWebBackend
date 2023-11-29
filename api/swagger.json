@@ -108,7 +108,7 @@
             "type": "time",
             "description": "Time in which the turn was reserved."
           },
-          "confirmation": {
+          "confirmation_id": {
             "type": "string",
             "description": "State in which the turn is (confirmed, pending, cancelled)."
           },
@@ -536,7 +536,7 @@
                         "turn_date": "2023-11-29",
                         "reservation_date": "2023-11-28",
                         "reservation_time": "13:21:01",
-                        "confirmation": "pending",
+                        "confirmation_id": "pending",
                         "reason_cancellation": null,
                         "user_id": 1,
                         "branch_office_id": 1,

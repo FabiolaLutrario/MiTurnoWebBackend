@@ -20,7 +20,7 @@ class Turn extends Sequelize.Model {
       where: {
         turn_date: turnDate,
         horary_id: horaryId,
-        confirmation: "pending",
+        confirmation_id: "pending",
       },
     });
   }

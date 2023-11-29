@@ -31,7 +31,7 @@ Confirmation.sync()
     return Promise.resolve(); // No es necesario devolver nada si ya hay horaries
   })
   .then(() => {
-    console.log("Default confirmations created successfully.");
+    console.log("Default turns states created successfully.");
   })
   .catch((error) => {
     console.error("Error:", error);

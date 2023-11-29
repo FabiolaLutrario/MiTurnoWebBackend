@@ -389,7 +389,7 @@ class UsersController {
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);
-        return res.staus(200).send(users);
+        return res.status(200).send(users);
       })
       .catch((error) => {
         console.error("Error getting users:", error);
