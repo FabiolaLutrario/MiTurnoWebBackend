@@ -86,7 +86,7 @@ class TurnsController {
 
   static getAllTurnsByConfirmationAndBranchOfficeId(req, res) {
     Turn.findAll({
-
+      where: {
         confirmation_id: req.params.confirmation_id,
         branch_office_id: req.params.branch_office_id,
       },
@@ -158,6 +158,5 @@ class TurnsController {
         res.status(500).send(err);
       });
   }
-
 }
 module.exports = TurnsController;
