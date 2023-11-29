@@ -1,4 +1,6 @@
-const { BranchOffice } = require("../models/index.models");
+const { BranchOffice, Turn } = require("../models/index.models");
+const moment = require("moment");
+const daysTester = require("../utils/daysTester");
 
 class BranchOfficesController {
   static create(req, res) {
@@ -66,32 +68,15 @@ class BranchOfficesController {
         return res.status(500).send("Internal Server Error");
       });
   }
-  static availableDays(req, res) {
+  static async unavailableDays(req, res) {
     const id = req.params.id;
-    BranchOffice.findByPk(id)
-      .then((branch) => {
-        const openHour = parseInt(branch.opening_time.slice(0, 2));
-        const openMinute = parseInt(branch.opening_time.slice(3));
-        const closeHour = parseInt(branch.closing_time.slice(0, 2));
-        const closeMinute = parseInt(branch.closing_time.slice(3));
-        let maxTurns = (closeHour - openHour) * 4;
-
-        if (openMinute === 15) maxTurns -= 1;
-        else if (openMinute === 30) maxTurns -= 2;
-        else if (openMinute === 45) maxTurns -= 3;
-        if (closeMinute === 15) maxTurns += 1;
-        else if (closeMinute === 30) maxTurns += 2;
-        else if (closeMinute === 45) maxTurns += 3;
-
-        maxTurns *= branch.boxes;
-
-        console.log(maxTurns);
-
-        res.send(branch);
-      })
-      .catch((err) => {
-        res.status(500).send(err);
+    BranchOffice.findByPk(id).then((branch) => {
+      const maxTurns = daysTester.createMaxTurns(branch);
+      const daysToTest = daysTester.createDays();
+      daysTester.testDays(daysToTest, maxTurns).then((unavailableDays) => {
+        res.status(200).send(unavailableDays);
       });
+    });
   }
 }
 

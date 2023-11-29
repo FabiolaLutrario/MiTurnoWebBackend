@@ -82,12 +82,11 @@ class TurnsController {
     Turn.findAll({
       where: {
         confirmation: req.params.confirmation,
-        branch_office_id:req.params.branchOfficeId,
+        branch_office_id: req.params.branchOfficeId,
       },
       include: [
         { model: BranchOffice, as: "branchOffice" },
-        { model: User, as: "user",
-        attributes: ['full_name'] }
+        { model: User, as: "user", attributes: ["full_name"] },
       ],
     })
       .then((turns) => {
@@ -122,11 +121,11 @@ class TurnsController {
 
   static changeTurnConfirmation(req, res) {
     const { id } = req.params;
-    const {confirmation} = req.body.confirmation
-    const {reasonCancellation} = req.body.reasonCancellation
+    const { confirmation } = req.body.confirmation;
+    const { reasonCancellation } = req.body.reasonCancellation;
 
     Turn.update(
-      { confirmation,  reason_cancellation: reasonCancellation},
+      { confirmation, reason_cancellation: reasonCancellation },
       { where: { id }, returning: true }
     )
       .then(([rows, turns]) => {
@@ -135,6 +134,15 @@ class TurnsController {
       .catch((error) => {
         console.error("Error when trying to update turn confirmation:", error);
         return res.status(500).send("Internal Server Error");
+      });
+  }
+  static all(req, res) {
+    Turn.findAll()
+      .then((turns) => {
+        res.status(200).send(turns);
+      })
+      .catch((err) => {
+        res.status(500).send(err);
       });
   }
 
