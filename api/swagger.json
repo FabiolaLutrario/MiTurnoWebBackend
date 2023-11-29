@@ -19,6 +19,10 @@
       "description": "Operations related to turns."
     },
     {
+      "name": "confirmations",
+      "description": "Operations related to turns statuses."
+    },
+    {
       "name": "branch-offices",
       "description": "Operations related to branche offices."
     },
@@ -138,10 +142,7 @@
           "horary_id"
         ],
         "example": {
-          "turn_date": "2023-11-28",
-          "reservation_date": "2023-11-25",
-          "reservation_time": "21:12:00",
-          "user_id": 1,
+          "turn_date": "2023-12-07",
           "branch_office_id": 1,
           "horary_id": "10:15:00"
         }
@@ -839,6 +840,65 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/turns/{user_id}": {
+      "post": {
+        "tags": ["turns"],
+        "summary": "Reserve a turn.",
+        "description": "Reserve a turn for a client with the data provided.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "schema": {
+              "type": "integer",
+              "description": "User Id to reserve a turn."
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Turn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Turn"
+                  },
+                  "example": {
+                    "id": 1,
+                    "turn_date": "2023-12-07",
+                    "horary_id": "10:15:00",
+                    "confirmation_id": "pending",
+                    "reservation_date": "2023-11-29",
+                    "reservation_time": "16:17:05",
+                    "branch_office_id": 1,
+                    "user_id": 1,
+                    "reason_cancellation": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
           },
           "500": {
             "$ref": "#/components/responses/ServerError"

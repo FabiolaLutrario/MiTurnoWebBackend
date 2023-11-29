@@ -61,7 +61,7 @@ class TurnsController {
                 return res
                   .status(400)
                   .send(
-                    "The turn on the selected day and time is no longer available"
+                    "The turn on the selected day and time is no longer available."
                   );
               Turn.create({
                 turn_date,
