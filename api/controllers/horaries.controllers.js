@@ -7,16 +7,16 @@ class HoraryController {
   static getHorariesByDateAndHoraryBranchOffice(req, res) {
     Turn.findAll({
       where: {
-        branch_office_id: req.params.branchOfficeId,
+        branch_office_id: req.params.branch_office_id,
         turn_date: req.params.date,
-        confirmation: "pending",
+        confirmation_id: "pending",
       },
     })
       .then((turns) => {
         if (!turns || turns.length === 0) {
-          return BranchOffice.findByPk(req.params.branchOfficeId).then(
-            (branchOffice) => {
-              if (!branchOffice || branchOffice.length === 0) {
+          return BranchOffice.findByPk(req.params.branch_office_id).then(
+            (branch_office) => {
+              if (!branch_office || branch_office.length === 0) {
                 return res.status(404).send("Branch Office not available");
               }
 
@@ -24,8 +24,8 @@ class HoraryController {
                 where: {
                   id: {
                     [Op.between]: [
-                      branchOffice.opening_time,
-                      branchOffice.closing_time,
+                      branch_office.opening_time,
+                      branch_office.closing_time,
                     ],
                   },
                 },
@@ -37,31 +37,31 @@ class HoraryController {
         }
 
         const turnsGroupedByHoraryId = turns.reduce((grouped, turn) => {
-          const horaryId = turn.horary_id;
+          const horary_id = turn.horary_id;
 
-          if (!grouped[horaryId]) {
-            grouped[horaryId] = [];
+          if (!grouped[horary_id]) {
+            grouped[horary_id] = [];
           }
 
-          grouped[horaryId].push(turn);
+          grouped[horary_id].push(turn);
           return grouped;
         }, {});
 
-        return BranchOffice.findByPk(req.params.branchOfficeId).then(
-          (branchOffice) => {
+        return BranchOffice.findByPk(req.params.branch_office_id).then(
+          (branch_office) => {
             const unavailableHoraries = Object.keys(
               turnsGroupedByHoraryId
             ).filter(
-              (horaryId) =>
-                turnsGroupedByHoraryId[horaryId].length >= branchOffice.boxes
+              (horary_id) =>
+                turnsGroupedByHoraryId[horary_id].length >= branch_office.boxes
             );
 
             return Horary.findAll({
               where: {
                 id: {
                   [Op.between]: [
-                    branchOffice.opening_time,
-                    branchOffice.closing_time,
+                    branch_office.opening_time,
+                    branch_office.closing_time,
                   ],
                   [Op.notIn]: unavailableHoraries,
                 },

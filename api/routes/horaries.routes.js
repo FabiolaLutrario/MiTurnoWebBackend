@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get("/", HorariesController.allHoraries);
 router.get(
-  "/:date/:branchOfficeId",
+  "/:date/:branch_office_id",
   HorariesController.getHorariesByDateAndHoraryBranchOffice
 );
 

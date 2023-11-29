@@ -8,18 +8,18 @@ const { Turn, BranchOffice } = require("../models/index.models");
 
 class UsersController {
   static register(req, res) {
-    const { fullName, dni, email, password, phoneNumber } = req.body;
+    const { full_name, dni, email, password, phone_number } = req.body;
 
-    if (!fullName || !dni || !email || !phoneNumber || !password) {
+    if (!full_name || !dni || !email || !phone_number || !password) {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
     const payload = {
-      fullName: fullName,
+      full_name,
       email: email,
       dni: dni,
-      phoneNumber: phoneNumber,
-      roleId: "customer",
+      phone_number,
+      role_id: "customer",
     };
 
     const token = generateToken(payload, "10d");
@@ -27,22 +27,22 @@ class UsersController {
     User.findOrCreate({
       where: { email },
       defaults: {
-        full_name: fullName,
+        full_name,
         dni,
         password,
         token: token,
-        phone_number: phoneNumber,
+        phone_number,
         role_id: "customer",
       },
     })
-      .then((userArray) => {
-        if (!userArray[1]) return res.status(409).send("Email already exists");
+      .then((users) => {
+        if (!users[1]) return res.status(409).send("Email already exists");
 
         //Genera el link de recuperación de contraseña y lo envía por correo
         const confirmURL = `http://localhost:3000/confirm-email/${token}`;
         const info = transporter.sendMail({
           from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
-          to: userArray[0].email,
+          to: users[0].email,
           subject: "Confirmación de correo ✔",
           html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
         });
@@ -64,15 +64,15 @@ class UsersController {
         if (!user) return res.sendStatus(401);
         user.validatePassword(password).then((isValid) => {
           if (!isValid) return res.sendStatus(401);
-          if (!user.confirmation) return res.status(412).send("Not confirmed");
+          if (!user.confirmation) return res.status(412).send("Not confirmed!");
           const payload = {
             id: user.id,
-            fullName: user.full_name,
+            full_name: user.full_name,
             dni: user.dni,
             email: user.email,
-            phoneNumber: user.phone_number,
-            roleId:user.role_id,
-            branchOfficeId:user.branch_office_id,
+            phone_number: user.phone_number,
+            role_id: user.role_id,
+            branch_office_id: user.branch_office_id,
           };
 
           const token = generateToken(payload, "1d");
@@ -83,7 +83,7 @@ class UsersController {
             secure: true,
           });
 
-          res.send(payload);
+          res.status(200).send(payload);
         });
       })
       .catch((error) => {
@@ -94,7 +94,7 @@ class UsersController {
 
   static validateAuthUser(req, res) {
     validateAuth(req, res, () => {
-      res.send(req.user);
+      res.status(200).send(req.user);
     });
   }
 
@@ -104,19 +104,19 @@ class UsersController {
       where: {
         user_id: id,
       },
-      include: { model: BranchOffice, as: "branchOffice" },
+      include: { model: BranchOffice, as: "branch_office" },
     })
       .then((turns) => {
         User.findOne({ where: { id } }).then((user) => {
           if (!user) return res.sendStatus(404);
           const payload = {
             id: user.id,
-            fullName: user.full_name,
+            full_name: user.full_name,
             dni: user.dni,
             email: user.email,
-            phoneNumber: user.phone_number,
-            roleId: user.role_id,
-            branchOfficeId: user.branch_office_id,
+            phone_number: user.phone_number,
+            role_id: user.role_id,
+            branch_office_id: user.branch_office_id,
             turns: turns,
           };
           res.status(200).send(payload);
@@ -134,18 +134,29 @@ class UsersController {
   }
 
   static editProfile(req, res) {
-    const id = req.params.userId;
+    const id = req.params.user_id;
+
+    const { full_name, dni, phone_number, branch_office_id } = req.body;
+
+    if (!full_name || !dni || !phone_number) {
+      return res.status(400).send({ error: "All fields are required!" });
+    }
 
     User.update(req.body, { where: { id }, returning: true })
       .then(([rows, users]) => {
         const user = users[0];
+
+        if (user.role_id === "operator" && !branch_office_id)
+          return res.status(400).send({ error: "All fields are required!" });
+
         const payload = {
           id: user.id,
-          fullName: user.full_name,
+          full_name: user.full_name,
           dni: user.dni,
           email: user.email,
-          phoneNumber: user.phone_number,
-          roleId: user.role_id,
+          phone_number: user.phone_number,
+          role_id: user.role_id,
+          branch_office_id: user.branch_office_id,
         };
 
         const token = generateToken(payload, "1d");
@@ -156,7 +167,7 @@ class UsersController {
           secure: true,
         });
 
-        res.status(200).send(users[0]);
+        res.status(200).send(payload);
       })
       .catch((error) => {
         console.error("Error when trying to update user:", error);
@@ -174,34 +185,28 @@ class UsersController {
         //Si el usuario existe va a generar un token
         const payload = {
           id: user.id,
-          fullName: user.full_name,
+          full_name: user.full_name,
           dni: user.dni,
-          phoneNumber: user.phone_number,
+          phone_number: user.phone_number,
           email: user.email,
         };
 
         const token = generateToken(payload, "10m");
         user.token = token;
 
-        user
-          .save()
-          .then(() => {
-            //Genera el link de recuperación de contraseña y lo envía por correo
-            const restorePasswordURL = `http://localhost:3000/new-password/${user.token}`;
-            const info = transporter.sendMail({
-              from: '"Recuperación de contraseña" <turnoweb.mailing@gmail.com>',
-              to: user.email,
-              subject: "Recuperación de contraseña ✔",
-              html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para completar el proceso:</b><a href="${restorePasswordURL}">${restorePasswordURL}</a>`,
-            });
-            info.then(() => {
-              res.status(200).send(user.email);
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            res.send("Something went wrong");
+        user.save().then(() => {
+          //Genera el link de recuperación de contraseña y lo envía por correo
+          const restorePasswordURL = `http://localhost:3000/new-password/${user.token}`;
+          const info = transporter.sendMail({
+            from: '"Recuperación de contraseña" <turnoweb.mailing@gmail.com>',
+            to: user.email,
+            subject: "Recuperación de contraseña ✔",
+            html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para completar el proceso:</b><a href="${restorePasswordURL}">${restorePasswordURL}</a>`,
           });
+          info.then(() => {
+            res.status(200).send(user.email);
+          });
+        });
       })
       .catch((error) => {
         console.error("Error when trying to restore password:", error);
@@ -261,7 +266,7 @@ class UsersController {
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);
-        return res.send(users);
+        return res.status(200).send(users);
       })
       .catch((error) => {
         console.error("Error getting users:", error);
@@ -270,15 +275,15 @@ class UsersController {
   }
 
   //  Se puede promover usuario de "Cliente" a "Administrador" u "Operador" y viceversa;
-  static promoteOrRevokePermissions(req, res) {
-    const { id } = req.params.userId;
+  static changeRole(req, res) {
+    const { user_id } = req.params;
 
-    User.findOne({ where: { id } })
+    User.findOne({ where: { id: user_id } })
       .then((user) => {
         if (!user) return res.sendStatus(404);
 
         /* Un Super Administrador no se puede autorevocar su permiso*/
-        if (user.role_id === "Super Administrador")
+        if (user.role_id === "super admin")
           return res
             .status(400)
             .send(
@@ -286,9 +291,9 @@ class UsersController {
             );
 
         // Si pasa todas las validaciones procede a promover o revocar los permisos según sea el caso
-        user.role_id = req.body.roleId;
+        user.role_id = req.body.role_id;
         user.save().then(() => {
-          res.status(200).send("Successful operation!");
+          res.status(201).send("Successful operation!");
         });
       })
       .catch((error) => {
@@ -301,9 +306,8 @@ class UsersController {
   }
 
   static deleteUser(req, res) {
-    const { id } = req.params.id;
     User.destroy({
-      where: { id },
+      where: { id: req.params.id },
     })
       .then((user) => {
         if (!user) return res.sendStatus(404);
@@ -315,19 +319,27 @@ class UsersController {
       });
   }
   static registerOperator(req, res) {
-    const { fullName, dni, email, password, branchOfficeId, phoneNumber } = req.body;
+    const { full_name, dni, email, password, branch_office_id, phone_number } =
+      req.body;
 
-    if (!fullName || !dni || !email || !password || !phoneNumber || !branchOfficeId) {
+    if (
+      !full_name ||
+      !dni ||
+      !email ||
+      !password ||
+      !phone_number ||
+      !branch_office_id
+    ) {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
     const payload = {
-      fullName: fullName,
-      email: email,
-      dni: dni,
-      phoneNumber: phoneNumber,
-      roleId: "operator",
-      branchOfficeId: branchOfficeId,
+      full_name,
+      email,
+      dni,
+      phone_number,
+      role_id: "operator",
+      branch_office_id,
     };
 
     const token = generateToken(payload, "10d");
@@ -335,35 +347,34 @@ class UsersController {
     User.findOrCreate({
       where: { email },
       defaults: {
-        full_name: fullName,
+        full_name,
         dni,
         password,
         token: token,
-        phone_number: phoneNumber,
-        branch_office_id:branchOfficeId,
+        phone_number,
+        branch_office_id,
         role_id: "operator",
       },
     })
-      .then((operatorArray) => {
-        if (!operatorArray[1])
-          return res.status(409).send("Email already exists");
+      .then((operators) => {
+        if (!operators[1]) return res.status(409).send("Email already exists.");
 
-                //Genera el link de recuperación de contraseña y lo envía por correo
-                const confirmURL = `http://localhost:3000/confirm-email/${token}`;
-                const info = transporter.sendMail({
-                  from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
-                  to: operatorArray[0].email,
-                  subject: "Confirmación de correo ✔",
-                  html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
-                });
-                info.then(() => {
-                  res.status(201).send(payload);
-                });
-              })
-              .catch((error) => {
-                console.error("Error when trying to register user:", error);
-                return res.status(500).send("Internal Server Error");
-              });
+        //Genera el link de recuperación de contraseña y lo envía por correo
+        const confirmURL = `http://localhost:3000/confirm-email/${token}`;
+        const info = transporter.sendMail({
+          from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
+          to: operators[0].email,
+          subject: "Confirmación de correo ✔",
+          html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
+        });
+        info.then(() => {
+          res.status(201).send(payload);
+        });
+      })
+      .catch((error) => {
+        console.error("Error when trying to register user:", error);
+        return res.status(500).send("Internal Server Error");
+      });
   }
   static getOperators(req, res) {
     User.findAll({
@@ -372,13 +383,13 @@ class UsersController {
       include: [
         {
           model: BranchOffice,
-          as: "branchOffice",
+          as: "branch_office",
         },
       ],
     })
       .then((users) => {
         if (!users || users.length === 0) return res.sendStatus(404);
-        return res.send(users);
+        return res.status(200).send(users);
       })
       .catch((error) => {
         console.error("Error getting users:", error);
@@ -387,6 +398,9 @@ class UsersController {
   }
   static confirmEmail(req, res) {
     const { token } = req.params;
+
+    if (!token) res.sendStatus(400);
+
     User.update(
       {
         confirmation: true,
@@ -394,11 +408,12 @@ class UsersController {
       },
       { where: { token }, returning: true }
     )
-      .then((user) =>
-        res.status(200).send(`Usuario ${user[1][0].id} confirmado`)
-      )
+      .then((user) => {
+        if (!user || user.length === 0) return res.sendStatus(401);
+        res.status(200).send(`Usuario ${user[1][0].id} confirmado`);
+      })
       .catch((err) => {
-        res.status(500).send("error al confirmar usuario");
+        res.status(500).send("Error confirming user!");
       });
   }
 }

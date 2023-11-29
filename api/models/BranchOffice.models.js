@@ -14,6 +14,10 @@ BranchOffice.init(
       allowNull: false,
       unique: true,
     },
+    phone_number: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     boxes: {
       type: Sequelize.INTEGER,
       allowNull: false,
