@@ -3,16 +3,21 @@ const Turn = require("./Turn.models");
 const BranchOffice = require("./BranchOffice.models");
 const Horary = require("./Horary.models");
 const Role = require("./Role.models");
+const Confirmation = require("./Confirmation.models");
 
 Turn.belongsTo(User, { foreignKey: "user_id", as: "user" });
 Turn.belongsTo(Horary, { foreignKey: "horary_id", as: "horary" });
 Turn.belongsTo(BranchOffice, {
   foreignKey: "branch_office_id",
-  as: "branchOffice",
+  as: "branch_office",
+});
+Turn.belongsTo(Confirmation, {
+  foreignKey: "confirmation_id",
+  as: "confirmation",
 });
 User.belongsTo(BranchOffice, {
   foreignKey: "branch_office_id",
-  as: "branchOffice",
+  as: "branch_office",
 });
 User.belongsTo(Role, { foreignKey: "role_id", as: "role" });
 
