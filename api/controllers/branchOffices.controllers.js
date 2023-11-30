@@ -38,6 +38,7 @@ class BranchOfficesController {
     const id = req.params.id;
     BranchOffice.findByPk(id)
       .then((branch_office) => {
+        if (!branch_office) res.status(404).send("Branch office not found");
         res.send(branch_office);
       })
       .catch((error) => {
@@ -48,7 +49,7 @@ class BranchOfficesController {
   static all(req, res) {
     BranchOffice.findAll()
       .then((branch_offices) => {
-        res.send(branch_offices);
+        res.status(200).send(branch_offices);
       })
       .catch((error) => {
         console.error("Error when trying to get branch offices:", error);
@@ -67,13 +68,11 @@ class BranchOfficesController {
       !opening_time ||
       !closing_time
     ) {
-      return res
-        .status(400)
-        .send({ error: "Todos los campos son obligatorios" });
+      return res.status(400).send({ error: "All fields are required!" });
     }
     BranchOffice.update(req.body, { where: { id }, returning: true })
       .then(([rows, branch_offices]) => {
-        res.send(branch_offices[0]);
+        res.status(200).send(branch_offices[0]);
       })
       .catch((error) => {
         console.error("Error when trying to update branch office:", error);
@@ -84,7 +83,7 @@ class BranchOfficesController {
     const id = req.params.id;
     BranchOffice.destroy({ where: { id } })
       .then(() => {
-        res.status(200).send("Branch office deleted sucsessfully");
+        res.status(202).send("Branch office deleted sucsessfully");
       })
       .catch((error) => {
         console.error("Error when trying to delete branch office:", error);
@@ -96,9 +95,15 @@ class BranchOfficesController {
     BranchOffice.findByPk(id).then((branch) => {
       const maxTurns = daysTester.createMaxTurns(branch);
       const daysToTest = daysTester.createDays();
-      daysTester.testDays(daysToTest, maxTurns).then((unavailableDays) => {
-        res.status(200).send(unavailableDays);
-      });
+      daysTester
+        .testDays(daysToTest, maxTurns)
+        .then((unavailableDays) => {
+          res.status(200).send(unavailableDays);
+        })
+        .catch((error) => {
+          console.error("Error when trying to get invailable days:", error);
+          return res.status(500).send("Internal Server Error");
+        });
     });
   }
 }

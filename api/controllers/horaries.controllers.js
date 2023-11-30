@@ -16,7 +16,7 @@ class HoraryController {
         if (!turns || turns.length === 0) {
           return BranchOffice.findByPk(req.params.branch_office_id).then(
             (branch_office) => {
-              if (!branch_office || branch_office.length === 0) {
+              if (!branch_office) {
                 return res.status(404).send("Branch Office not available");
               }
 
@@ -78,9 +78,15 @@ class HoraryController {
       });
   }
   static allHoraries(req, res) {
-    Horary.findAll({ attributes: ["id"] }).then((horaries) => {
-      res.status(200).send(horaries);
-    });
+    Horary.findAll({ attributes: ["id"] })
+      .then((horaries) => {
+        if (!horaries) return res.sendStatus(404);
+        res.status(200).send(horaries);
+      })
+      .catch((error) => {
+        console.error("Error getting horaries:", error);
+        return res.status(500).send("Internal Server Error");
+      });
   }
 }
 module.exports = HoraryController;

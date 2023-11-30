@@ -4,8 +4,8 @@ class RolesController {
   static getAllRoles(req, res) {
     Role.findAll()
       .then((roles) => {
-        if (!roles || roles.length === 0) return res.sendStatus(404);
-        return res.send(roles);
+        if (!roles) return res.sendStatus(404);
+        return res.status(200).send(roles);
       })
       .catch((error) => {
         console.error("Error getting roles:", error);

@@ -388,7 +388,7 @@ class UsersController {
       ],
     })
       .then((users) => {
-        if (!users || users.length === 0) return res.sendStatus(404);
+        if (!users) return res.status(404).send("Not found operators!");
         return res.status(200).send(users);
       })
       .catch((error) => {

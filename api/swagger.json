@@ -19,10 +19,6 @@
       "description": "Operations related to turns."
     },
     {
-      "name": "confirmations",
-      "description": "Operations related to turns statuses."
-    },
-    {
       "name": "branch-offices",
       "description": "Operations related to branche offices."
     },
@@ -158,6 +154,10 @@
             "type": "string",
             "description": "Branch office email."
           },
+          "phone_number": {
+            "type": "string",
+            "description": "Branch office phone number."
+          },
           "boxes": {
             "type": "integer",
             "description": "Number of boxes for customer service at the branch office."
@@ -171,10 +171,18 @@
             "description": "Branch office closing hours to the public."
           }
         },
-        "required": ["name", "email", "boxes", "opening_time", "closing_time"],
+        "required": [
+          "name",
+          "email",
+          "phone_number",
+          "boxes",
+          "opening_time",
+          "closing_time"
+        ],
         "example": {
-          "name": "Miami",
-          "email": "miamisucursal@email.com",
+          "name": "Sucursal 1",
+          "email": "branch1@gmail.com",
+          "phone_number": "2231234567",
           "boxes": 3,
           "opening_time": "10:00:00",
           "closing_time": "15:00:00"
@@ -544,8 +552,9 @@
                         "horary_id": "10:15:00",
                         "branch_office": {
                           "id": 1,
-                          "name": "Miami",
-                          "email": "miamisucursal@gmail.com",
+                          "name": "Sucursal 1",
+                          "email": "branch1@gmail.com",
+                          "phone_number": "2231234567",
                           "boxes": 3,
                           "opening_time": "10:00:00",
                           "closing_time": "15:00:00"
@@ -899,6 +908,670 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/turns/by-confirmation-and-branch-office/{confirmation_id}/{branch_office_id}": {
+      "get": {
+        "tags": ["turns"],
+        "summary": "Get turns.",
+        "description": "Get turns by branch office Id and status confirmation turn.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "confirmation_id",
+            "schema": {
+              "type": "string",
+              "description": "Confirmation Id to get turns."
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "branch_office_id",
+            "schema": {
+              "type": "integer",
+              "description": "Branch office Id to get turns."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Turn"
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "turn_date": "2023-12-07",
+                      "reservation_date": "2023-11-29",
+                      "reservation_time": "16:17:05",
+                      "confirmation_id": "pending",
+                      "reason_cancellation": null,
+                      "user_id": 1,
+                      "branch_office_id": 1,
+                      "horary_id": "10:15:00",
+                      "branch_office": {
+                        "id": 1,
+                        "name": "Sucursal 1",
+                        "email": "branch1@gmail.com",
+                        "phone_number": "2231234567",
+                        "boxes": 3,
+                        "opening_time": "10:00:00",
+                        "closing_time": "15:00:00"
+                      },
+                      "user": {
+                        "full_name": "Alan Turing"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/turns/{id}": {
+      "get": {
+        "tags": ["turns"],
+        "summary": "Get a turn.",
+        "description": "Get a turn based on your id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Id of the turn to obtain."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Turn"
+                  },
+                  "example": {
+                    "id": 1,
+                    "turn_date": "2023-12-07",
+                    "reservation_date": "2023-11-29",
+                    "reservation_time": "16:17:05",
+                    "confirmation_id": "pending",
+                    "reason_cancellation": null,
+                    "user_id": 1,
+                    "branch_office_id": 1,
+                    "horary_id": "10:15:00",
+                    "branch_office": {
+                      "id": 1,
+                      "name": "Sucursal 1",
+                      "email": "branch1@gmail.com",
+                      "phone_number": "2231234567",
+                      "boxes": 3,
+                      "opening_time": "10:00:00",
+                      "closing_time": "15:00:00"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/turns/": {
+      "get": {
+        "tags": ["turns"],
+        "summary": "Get all turns.",
+        "description": "Get all turns.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Turn"
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "turn_date": "2023-12-07",
+                      "reservation_date": "2023-11-29",
+                      "reservation_time": "16:17:05",
+                      "confirmation_id": "pending",
+                      "reason_cancellation": null,
+                      "user_id": 1,
+                      "branch_office_id": 1,
+                      "horary_id": "10:15:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/turns/confirm-turn/{id}": {
+      "put": {
+        "tags": ["turns"],
+        "summary": "Change confirmation status of a turn to confirmed.",
+        "description": "Change confirmation status of a turn to confirmed according to its Id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Turn Id."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Turn"
+                  },
+                  "example": {
+                    "id": 1,
+                    "turn_date": "2023-12-07",
+                    "reservation_date": "2023-11-29",
+                    "reservation_time": "16:17:05",
+                    "confirmation_id": "confirmed",
+                    "reason_cancellation": null,
+                    "user_id": 1,
+                    "branch_office_id": 1,
+                    "horary_id": "10:15:00"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/turns/cancel-turn/{id}": {
+      "put": {
+        "tags": ["turns"],
+        "summary": "Change confirmation status of a turn to cancelled.",
+        "description": "Change confirmation status of a turn to cancelled according to its Id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Turn Id."
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Turn"
+              },
+              "example": {
+                "reason_cancellation": "Ya no quiero ir."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/Turn"
+                  },
+                  "example": {
+                    "id": 1,
+                    "turn_date": "2023-12-07",
+                    "reservation_date": "2023-11-29",
+                    "reservation_time": "16:17:05",
+                    "confirmation_id": "cancelled",
+                    "reason_cancellation": "Ya no quiero ir.",
+                    "user_id": 1,
+                    "branch_office_id": 1,
+                    "horary_id": "10:15:00"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/branch-offices/create": {
+      "post": {
+        "tags": ["branch-offices"],
+        "summary": "Create new branch office.",
+        "description": "Create a new branch office with the data provided (Admin permissions are required to access this path..",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchOffice"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/BranchOffice"
+                  },
+                  "example": {
+                    "id": 1,
+                    "name": "Sucursal 1",
+                    "email": "branch1@gmail.com",
+                    "phone_number": "2231234567",
+                    "boxes": 3,
+                    "opening_time": "10:00:00",
+                    "closing_time": "15:00:00"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "All fields are required!"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/branch-offices/": {
+      "get": {
+        "tags": ["branch-offices"],
+        "summary": "Get all branch offices.",
+        "description": "Get all branch offices.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BranchOffice"
+                  },
+                  "example": [
+                    {
+                      "id": 1,
+                      "name": "Sucursal 1",
+                      "email": "branch1@gmail.com",
+                      "phone_number": "2231234567",
+                      "boxes": 3,
+                      "opening_time": "10:00:00",
+                      "closing_time": "15:00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/branch-offices/single/{id}": {
+      "get": {
+        "tags": ["branch-offices"],
+        "summary": "Get a branch office.",
+        "description": "Get a branch office based on your id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Id of the branch office to obtain."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BranchOffice"
+                  },
+                  "example": {
+                    "id": 1,
+                    "name": "Sucursal 1",
+                    "email": "branch1@gmail.com",
+                    "phone_number": "2231234567",
+                    "boxes": 3,
+                    "opening_time": "10:00:00",
+                    "closing_time": "15:00:00"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/branch-offices/unavailable-days/{id}": {
+      "get": {
+        "tags": ["branch-offices"],
+        "summary": "Get unvailable days ",
+        "description": "Get unavailable days to take turns at a branch office.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Id branch office."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BranchOffice"
+                  },
+                  "example": ["2023-12-07T00:00:00.000Z"]
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/branch-offices/edit/{id}": {
+      "put": {
+        "tags": ["branch-offices"],
+        "summary": "Edit a branch office.",
+        "description": "Edit branch office with the data provided (Admin permissions are required to access this path).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Branch office Id to edit."
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BranchOffice"
+              },
+              "example": {
+                "name": "Sucursal 1 Edit",
+                "email": "branch1edit@gmail.com",
+                "phone_number": "2231234566",
+                "boxes": 4,
+                "opening_time": "10:00:00",
+                "closing_time": "16:00:00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  },
+                  "example": {
+                    "id": 1,
+                    "name": "Sucursal 1 Edit",
+                    "email": "branch1edit@gmail.com",
+                    "phone_number": "2231234566",
+                    "boxes": 4,
+                    "opening_time": "10:00:00",
+                    "closing_time": "16:00:00"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "All fields are required!"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/branch-offices/{id}": {
+      "delete": {
+        "tags": ["branch-offices"],
+        "summary": "Delete a branch office",
+        "description": "Delete a branch office based on their Id (Admin permissions are required to access this path).",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer",
+              "description": "Branch office Id to delete."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation!"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/roles/": {
+      "get": {
+        "tags": ["roles"],
+        "summary": "Get all roles.",
+        "description": "Get all roles.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  },
+                  "example": [
+                    {
+                      "id": "admin"
+                    },
+                    {
+                      "id": "super admin"
+                    },
+                    {
+                      "id": "operator"
+                    },
+                    {
+                      "id": "customer"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/horaries/": {
+      "get": {
+        "tags": ["horaries"],
+        "summary": "Get all horaries.",
+        "description": "Get all horaries.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Horary"
+                  },
+                  "example": [
+                    {
+                      "id": "10:00:00"
+                    },
+                    {
+                      "id": "10:45:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/api/horaries/{date}/{branch_office_id}": {
+      "get": {
+        "tags": ["horaries"],
+        "summary": "Get horaries.",
+        "description": "Get horaries by date and branch office Id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dateonly",
+            "schema": {
+              "type": "string",
+              "description": "Date for which available horaries are required to be obtained."
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "branch_office_id",
+            "schema": {
+              "type": "integer",
+              "description": "Branch office Id for which available horaries are required to be obtained."
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Horary"
+                  },
+                  "example": [
+                    {
+                      "id": "10:00:00"
+                    },
+                    {
+                      "id": "10:45:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           },
           "500": {
             "$ref": "#/components/responses/ServerError"

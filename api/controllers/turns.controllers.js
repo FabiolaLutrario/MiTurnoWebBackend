@@ -97,7 +97,7 @@ class TurnsController {
     })
       .then((turns) => {
         if (!turns)
-          res
+          return res
             .status(404)
             .send("There are no turns in state: ", req.params.confirmation_id);
         return res.status(200).send(turns);
@@ -125,30 +125,46 @@ class TurnsController {
       });
   }
 
-  static changeTurnConfirmation(req, res) {
+  static confirmTurn(req, res) {
     const { id } = req.params;
 
-    const { confirmation_id } = req.body.confirmation_id;
-    const { reason_cancellation } = req.body.reason_cancellation;
-
-    if (!confirmation_id) {
-      return res
-        .status(400)
-        .send({ error: "Confirmation status is required!" });
-    }
-
     Turn.update(
-      { confirmation_id, reason_cancellation },
+      { confirmation_id: "confirmed" },
       { where: { id }, returning: true }
     )
       .then(([rows, turns]) => {
         res.status(200).send(turns[0]);
       })
       .catch((error) => {
-        console.error("Error when trying to update turn confirmation:", error);
+        console.error("Error when trying to confirm turn:", error);
         return res.status(500).send("Internal Server Error");
       });
   }
+
+  static cancelTurn(req, res) {
+    const { id } = req.params;
+    const { reason_cancellation } = req.body;
+
+    if (!reason_cancellation)
+      return res
+        .status(400)
+        .send({
+          error: "The reason for cancellation of the turn is required.",
+        });
+
+    Turn.update(
+      { confirmation_id: "cancelled", reason_cancellation },
+      { where: { id }, returning: true }
+    )
+      .then(([rows, turns]) => {
+        res.status(200).send(turns[0]);
+      })
+      .catch((error) => {
+        console.error("Error when trying to cancelled turn:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+
   static all(req, res) {
     Turn.findAll()
       .then((turns) => {
