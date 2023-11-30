@@ -7,11 +7,15 @@ This is a web system that allows the reservation of appointments for companies w
 
 - [Features](#features)
 - [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+- [Prerequisites](#prerequisites)
+- [How to Clone](#how-to-clone)
+- [Installation](#installation)
+- [Archive .env](#archive-.env)
+- [Run](#run)
 - [Usage](#usage)
+- [API](#api)
 - [Contributing](#contributing)
-- [Contact](#contact)
+- [Contacts](#contacts)
 
 ## Features ✅
 
@@ -81,7 +85,7 @@ npm install
 
 You need to create an .env file by following the .env.example file, where you can find the required API_KEYS examples.
 
-### Run ⚙️
+## Run ⚙️
 
 Execute the command:
 
@@ -89,11 +93,11 @@ Execute the command:
 npm start
 ```
 
-### Usage ⬆
+## Usage ⬆
 
 The application is running on the port http://localhost:5001
 
-### API 📜
+## API 📜
 
 You can test the different endpoints and access our API resources:
 
