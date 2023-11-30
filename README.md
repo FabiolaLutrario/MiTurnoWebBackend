@@ -5,7 +5,7 @@ This is a web system that allows the reservation of appointments for companies w
 
 ## Table of Contents
 
-- [Features ✅](#features-%E2%9C%85)
+- [Features %E2%9C%85](#features-%E2%9C%85)
 - [Getting Started 🚀](#getting-started-%F0%9F%9A%80)
 - [Prerequisites 📋](#prerequisites-%F0%9F%93%8B)
 - [How to Clone 🔁](#how-to-clone-%F0%9F%94%81)
