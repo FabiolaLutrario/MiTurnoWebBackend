@@ -5,17 +5,17 @@ This is a web system that allows the reservation of appointments for companies w
 
 ## Table of Contents
 
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Prerequisites](#prerequisites)
-- [How to Clone](#how-to-clone)
-- [Installation](#installation)
-- [Archive .env](#archive-.env)
-- [Run](#run)
-- [Usage](#usage)
-- [API](#api)
-- [Contributing](#contributing)
-- [Contacts](#contacts)
+- [Features ✅](#features-%E2%9C%85)
+- [Getting Started 🚀](#getting-started-%F0%9F%9A%80)
+- [Prerequisites 📋](#prerequisites-%F0%9F%93%8B)
+- [How to Clone 🔁](#how-to-clone-%F0%9F%94%81)
+- [Installation 🔧](#installation-%F0%9F%94%A7)
+- [Archive .env 🔑](#archive-env-%F0%9F%94%91)
+- [Run ⚙️](#run-%E2%9A%99%EF%B8%8F)
+- [Usage ⬆](#usage-%E2%AC%86)
+- [API 📜](#api-%F0%9F%93%9C)
+- [Contributing 🤝](#contributing-%F0%9F%A4%9D)
+- [Contacts 📞](#contacts-%F0%9F%93%9E)
 
 ## Features ✅
 
@@ -50,7 +50,7 @@ This is a web system that allows the reservation of appointments for companies w
 The project is carried out in:
 
 - [Node.js](https://nodejs.org/es/)
-- [express.js](https://www.expressjs.com/es/)
+- [Express.js](https://expressjs.com/es/)
 - [Postgresql](https://www.postgresql.org/)
 - [Sequelize](https://sequelize.org/)
 
@@ -61,7 +61,7 @@ The project is carried out in:
 To be able to use the project on localhost it is necessary to clone it and to have some necessary programs:
 
 - [Nodejs](https://nodejs.org/en/download/) v16.20.2.
-- [npm](https://www.npmjs.com/package/download) (or [yarn](https://nodejs.org/en/download/)) installed on your machine.
+- [npm](https://www.npmjs.com/package/download) (or yarn) installed on your machine.
 
 ## How to Clone 🔁
 
@@ -122,6 +122,6 @@ Thanks again!
 - Fabiola Lutrario » [Email](mailto:fabiolalutrario@gmail.com) - [LinkedIn](https://www.linkedin.com/in/fabiolalutrario/)
 - Juan Arismendi Diaz» [Email](mailto:juanarismendidiaz@gmail.com) - [LinkedIn](https://www.linkedin.com/in/juan-arismendi-diaz/)
 - Lucas Glave » [Email](mailto:lucasglave@gmail.com) - [LinkedIn](https://www.linkedin.com/in/lucasglave/)
-- Juan Pablo Lezcano » [Email](mailto:jplezcano75@gmail.com) - [LinkedIn](https://www.linkedin.com/in/juan-pablo-lezcano/)
+- Juan Pablo Lezcano » [Email](mailto:jplezcano75@gmail.com) - [LinkedIn](https://www.linkedin.com/in/juan-pablo-lezcano-02529a214/)
 
-Project Link: [https://github.com/McHeph/MiTurnoWebBack](https://https://github.com/LucasGlave/MiTurnoWeb)
+Project Link: [https://github.com/McHeph/MiTurnoWebBack](https://github.com/McHeph/MiTurnoWebBack)
