@@ -81,6 +81,14 @@ Turn.init(
         key: "id",
       },
     },
+    full_name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    phone_number: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   },
   { sequelize: db, modelName: "turn" }
 );

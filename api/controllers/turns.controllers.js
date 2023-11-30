@@ -9,9 +9,16 @@ class TurnsController {
   static generateTurn(req, res) {
     const currentDate = moment();
     const currentTime = moment().format("HH:mm:ss");
-    const { turn_date, horary_id, branch_office_id } = req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
+    const { turn_date, horary_id, branch_office_id, full_name, phone_number } =
+      req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
 
-    if (!turn_date || !horary_id || !branch_office_id) {
+    if (
+      !turn_date ||
+      !horary_id ||
+      !branch_office_id ||
+      !full_name ||
+      !phone_number
+    ) {
       return res
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
@@ -65,6 +72,8 @@ class TurnsController {
                   );
               Turn.create({
                 turn_date,
+                full_name,
+                phone_number,
                 horary_id,
                 confirmation_id: "pending",
                 reservation_date: currentDate,
