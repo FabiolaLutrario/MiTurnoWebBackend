@@ -182,7 +182,25 @@ class TurnsController {
       { where: { id }, returning: true }
     )
       .then(([rows, turns]) => {
-        res.status(200).send(turns[0]);
+        User.findByPk(turns[0].user_id).then((user) => {
+          const info = transporter.sendMail({
+            from: '"Cancelación de turno" <turnoweb.mailing@gmail.com>',
+            to: user.email,
+            subject: "Cancelación de turno",
+            html: `<p>Hola ${
+              user.full_name
+            }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
+              turns[0].turn_date
+            } a las ${turns[0].horary_id.slice(
+              0,
+              5
+            )} fue cancelado por la siguiente razón:"${reason_cancellation}".
+            Muchas gracias por confiar en nosotros!</p>`,
+          });
+          info.then(() => {
+            res.status(200).send(turns[0]);
+          });
+        });
       })
       .catch((error) => {
         console.error("Error when trying to cancelled turn:", error);
