@@ -94,7 +94,8 @@ class TurnsController {
                     5
                   )} fue reservado satisfactoriamente. Te esperamos en nuestra sucursal de ${
                     branch_office.name
-                  }.</p><br><p>Muchas gracias por confiar en nosotros!</p>`,
+                  }.
+                  Muchas gracias por confiar en nosotros!</p>`,
                 });
                 info.then(() => {
                   res.status(201).send(turn);
