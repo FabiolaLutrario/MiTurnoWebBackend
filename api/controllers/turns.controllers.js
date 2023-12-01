@@ -135,6 +135,24 @@ class TurnsController {
       });
   }
 
+  static getAllTurnsByConfirmationAndUser(req, res) {
+    Turn.findAll({
+      where: {
+        confirmation_id: req.params.confirmation_id,
+        user_id: req.params.user_id,
+      },
+      include: [{ model: BranchOffice, as: "branch_office" }],
+    })
+      .then((turns) => {
+        if (!turns) return res.status(404).send("There are no turns");
+        return res.status(200).send(turns);
+      })
+      .catch((error) => {
+        console.error("Error when trying to get turns:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+
   static getTurn(req, res) {
     Turn.findOne({
       where: {

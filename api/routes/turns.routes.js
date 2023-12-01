@@ -9,9 +9,13 @@ router.get(
   "/by-confirmation-and-branch-office/:confirmation_id/:branch_office_id",
   TurnsController.getAllTurnsByConfirmationAndBranchOfficeId
 );
+router.get(
+  "/by-confirmation-and-user/:confirmation_id/:user_id",
+  TurnsController.getAllTurnsByConfirmationAndUser
+);
+router.put("/cancel-turn/:id", TurnsController.cancelTurn);
 
 //Con permisos operator, admin y super admin
 router.put("/confirm-turn/:id", TurnsController.confirmTurn);
-router.put("/cancel-turn/:id", TurnsController.cancelTurn);
 
 module.exports = router;
