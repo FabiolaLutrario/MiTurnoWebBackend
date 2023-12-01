@@ -85,7 +85,7 @@ class TurnsController {
                   from: '"Confirmación de turno" <turnoweb.mailing@gmail.com>',
                   to: user.email,
                   subject: "Confirmación de turno ✔",
-                  html: `<b>Hola ${
+                  html: `<p>Hola ${
                     user.full_name
                   }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
                     turn.turn_date
@@ -94,7 +94,7 @@ class TurnsController {
                     5
                   )} fue reservado satisfactoriamente. Te esperamos en nuestra sucursal de ${
                     branch_office.name
-                  }.</b></br><b>Muchas gracias por confiar en nosotros!</b>`,
+                  }.</p><br><p>Muchas gracias por confiar en nosotros!</p>`,
                 });
                 info.then(() => {
                   res.status(201).send(turn);
