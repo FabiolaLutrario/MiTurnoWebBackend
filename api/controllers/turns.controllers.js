@@ -81,7 +81,24 @@ class TurnsController {
                 branch_office_id,
                 user_id: user.id,
               }).then((turn) => {
-                res.status(201).send(turn);
+                const info = transporter.sendMail({
+                  from: '"Confirmación de turno" <turnoweb.mailing@gmail.com>',
+                  to: user.email,
+                  subject: "Confirmación de turno ✔",
+                  html: `<b>Hola ${
+                    user.full_name
+                  }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
+                    turn.turn_date
+                  } a las ${turn.horary_id.slice(
+                    0,
+                    5
+                  )} fue reservado satisfactoriamente. Te esperamos en nuestra sucursal de ${
+                    branch_office.name
+                  }.</b></br><b>Muchas gracias por confiar en nosotros!</b>`,
+                });
+                info.then(() => {
+                  res.status(201).send(turn);
+                });
               });
             });
           }
@@ -155,11 +172,9 @@ class TurnsController {
     const { reason_cancellation } = req.body;
 
     if (!reason_cancellation)
-      return res
-        .status(400)
-        .send({
-          error: "The reason for cancellation of the turn is required.",
-        });
+      return res.status(400).send({
+        error: "The reason for cancellation of the turn is required.",
+      });
 
     Turn.update(
       { confirmation_id: "cancelled", reason_cancellation },
