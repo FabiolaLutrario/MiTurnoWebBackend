@@ -1,5 +1,5 @@
 const { generateToken } = require("../config/tokens.config");
-const { validateAuth } = require("../config/auth.config");
+const { validateAuth } = require("../middlewares/validateAuth.js");
 const { validateToken } = require("../config/tokens.config");
 const { transporter } = require("../config/mailer.config");
 const User = require("../models/User.models");

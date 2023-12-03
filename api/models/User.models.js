@@ -83,4 +83,40 @@ User.beforeSave((user) => {
   });
 });
 
+/* Crea los roles por defecto al instanciar la tabla.*/
+User.sync().then(() => {
+  return User.count();
+}).then((count) => {
+  if (count === 0) {
+    const userSuperAdminToCreate = [{
+      "full_name": "Super admin",
+      "email": process.env.EMAIL_SUPERADMIN,
+      "password": "Turnoweb123456",
+      "role_id": "super admin",
+      "dni": "12345678",
+      "confirmation": true,
+      "phone_number": "2231234567"
+    }];
+
+    // Aplicar hashing de la contraseña manualmente
+    const usersWithHashedPassword = userSuperAdminToCreate.map((user) => {
+      const salt = bcrypt.genSaltSync();
+      const hashedPassword = bcrypt.hashSync(user.password, salt);
+
+      return {
+        ...user,
+        salt: salt,
+        password: hashedPassword
+      };
+    });
+
+    return User.bulkCreate(usersWithHashedPassword);
+  }
+  return Promise.resolve();
+}).then(() => {
+  console.log("Default user super admin created successfully.");
+}).catch((error) => {
+  console.error("Error:", error);
+});
+
 module.exports = User;
