@@ -40,6 +40,7 @@ class daysTester {
     }
     return testDays;
   }
+
   static createMaxTurns(branch) {
     const openHour = parseInt(branch.opening_time.slice(0, 2));
     const openMinute = parseInt(branch.opening_time.slice(3));
@@ -57,10 +58,13 @@ class daysTester {
     maxTurns *= branch.boxes;
     return maxTurns;
   }
-  static async testDays(daysArray, maxTurns) {
+
+  static async testDays(daysArray, maxTurns, branch) {
     let unavailableDays = [];
     for (const day of daysArray) {
-      await Turn.findAll({ where: { turn_date: day } }).then((turns) => {
+      await Turn.findAll({
+        where: { turn_date: day, branch_office_id: branch.id },
+      }).then((turns) => {
         if (turns.length >= maxTurns) unavailableDays.push(new Date(day));
       });
     }
