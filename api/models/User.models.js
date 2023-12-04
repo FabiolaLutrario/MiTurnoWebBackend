@@ -89,13 +89,13 @@ User.sync().then(() => {
 }).then((count) => {
   if (count === 0) {
     const userSuperAdminToCreate = [{
-      "full_name": "Super admin",
-      "email": process.env.EMAIL_SUPERADMIN,
-      "password": "Turnoweb123456",
-      "role_id": "super admin",
-      "dni": "12345678",
-      "confirmation": true,
-      "phone_number": "2231234567"
+      full_name: "Super admin",
+      email: process.env.EMAIL_SUPERADMIN,
+      password: "Turnoweb123456",
+      role_id: "super admin",
+      dni: "12345678",
+      confirmation: true,
+      phone_number: "2231234567"
     }];
 
     // Aplicar hashing de la contraseña manualmente
