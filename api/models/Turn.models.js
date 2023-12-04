@@ -1,10 +1,10 @@
 const Sequelize = require("sequelize");
 const db = require("./db");
-const moment = require("moment");
 const BranchOffice = require("./BranchOffice.models");
 const Horary = require("./Horary.models");
 const User = require("./User.models");
 const Confirmation = require("./Confirmation.models");
+const ReasonCancellation = require("./ReasonCancellation.models");
 
 class Turn extends Sequelize.Model {
   static turnsByUser(userId) {
@@ -54,8 +54,12 @@ Turn.init(
         key: "id",
       },
     },
-    reason_cancellation: {
-      type: Sequelize.STRING,
+    reason_cancellation_id: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: ReasonCancellation,
+        key: "id",
+      },
     },
     user_id: {
       type: Sequelize.INTEGER,

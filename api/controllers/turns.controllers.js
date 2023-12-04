@@ -2,6 +2,7 @@ const { transporter } = require("../config/mailer.config");
 const Turn = require("../models/Turn.models");
 const User = require("../models/User.models");
 const BranchOffice = require("../models/BranchOffice.models");
+const ReasonCancellation = require("../models/ReasonCancellation.models");
 const moment = require("moment");
 const { Op } = require("sequelize");
 
@@ -188,36 +189,39 @@ class TurnsController {
 
   static cancelTurn(req, res) {
     const { id } = req.params;
-    const { reason_cancellation } = req.body;
+    const { reason_cancellation_id } = req.body;
 
-    if (!reason_cancellation)
+    if (!reason_cancellation_id)
       return res.status(400).send({
         error: "The reason for cancellation of the turn is required.",
       });
 
     Turn.update(
-      { confirmation_id: "cancelled", reason_cancellation },
+      { confirmation_id: "cancelled", reason_cancellation_id },
       { where: { id }, returning: true }
     )
       .then(([rows, turns]) => {
         User.findByPk(turns[0].user_id).then((user) => {
-          const info = transporter.sendMail({
-            from: '"Cancelación de turno" <turnoweb.mailing@gmail.com>',
-            to: user.email,
-            subject: "Cancelación de turno",
-            html: `<p>Hola ${
-              user.full_name
-            }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
-              turns[0].turn_date
-            } a las ${turns[0].horary_id.slice(
-              0,
-              5
-            )} fue cancelado por la siguiente razón:"${reason_cancellation}".
-            Muchas gracias por confiar en nosotros!</p>`,
-          });
-          info.then(() => {
-            res.status(200).send(turns[0]);
-          });
+          ReasonCancellation.findByPk(reason_cancellation_id)
+          .then((reasonCancellation)=>{
+            const info = transporter.sendMail({
+              from: '"Cancelación de turno" <turnoweb.mailing@gmail.com>',
+              to: user.email,
+              subject: "Cancelación de turno",
+              html: `<p>Hola ${
+                user.full_name
+              }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
+                turns[0].turn_date
+              } a las ${turns[0].horary_id.slice(
+                0,
+                5
+              )} fue cancelado por la siguiente razón:"${reasonCancellation.reason}".
+              Muchas gracias por confiar en nosotros!</p>`,
+            });
+            info.then(() => {
+              res.status(200).send(turns[0]);
+            });
+          })
         });
       })
       .catch((error) => {
