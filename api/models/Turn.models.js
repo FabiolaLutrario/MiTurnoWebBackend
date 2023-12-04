@@ -15,12 +15,13 @@ class Turn extends Sequelize.Model {
     });
   }
 
-  static checkTurns(turnDate, horaryId) {
+  static checkTurns(turnDate, horaryId, branch_office_id) {
     return Turn.findAll({
       where: {
         turn_date: turnDate,
         horary_id: horaryId,
         confirmation_id: "pending",
+        branch_office_id: branch_office_id,
       },
     });
   }
