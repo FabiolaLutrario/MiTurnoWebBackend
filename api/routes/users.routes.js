@@ -20,6 +20,7 @@ router.get(
 router.put("/edit-user/:user_id", validateAuth, UsersController.editProfile);
 router.put("/restore-password", UsersController.sendEmail);
 router.put("/confirm-email/:token", UsersController.confirmEmail);
+router.put("/change-password/:user_id", UsersController.changePassword);
 
 //Con permisos admin y super admin
 router.post(

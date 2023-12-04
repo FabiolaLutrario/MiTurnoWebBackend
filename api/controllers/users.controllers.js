@@ -429,5 +429,25 @@ class UsersController {
         res.status(500).send("Error confirming user!");
       });
   }
+  static changePassword(req, res) {
+    const { user_id } = req.params;
+    const { old_password, new_password } = req.body;
+
+    User.findByPk(user_id)
+      .then((user) => {
+        if (!user) return res.sendStatus(401);
+        user.validatePassword(old_password).then((isValid) => {
+          if (!isValid) return res.sendStatus(401);
+          user.password = new_password;
+          user.save().then(() => {
+            res.sendStatus(200);
+          });
+        });
+      })
+      .catch((error) => {
+        console.error("Error when trying to overwrite password:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
 }
 module.exports = UsersController;
