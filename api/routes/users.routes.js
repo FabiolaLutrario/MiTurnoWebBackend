@@ -3,7 +3,7 @@ const UsersController = require("../controllers/users.controllers");
 const { validateAuth } = require("../middlewares/validateAuth");
 const {
   validateAuthSuperAdmin,
-} = require("../middlewares/validateAuthSuperAdmin");
+} = require("../middlewares/validateAuthSuperAdmin.js");
 const { validateAuthAdmin } = require("../middlewares/validateAuthAdmin");
 const router = express.Router();
 
