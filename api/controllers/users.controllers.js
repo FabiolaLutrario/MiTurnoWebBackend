@@ -38,7 +38,7 @@ class UsersController {
       .then((users) => {
         if (!users[1]) return res.status(409).send("Email already exists");
 
-        //Genera el link de recuperación de contraseña y lo envía por correo
+        //Genera el link de confirmación de cuenta y lo envía por correo
         const confirmURL = `http://localhost:3000/confirm-email/${token}`;
         const info = transporter.sendMail({
           from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
@@ -289,10 +289,13 @@ class UsersController {
             .send(
               "An administrator by default cannot self-revoke a permission"
             );
-
+      })
+      .then(() => {
         // Si pasa todas las validaciones procede a promover o revocar los permisos según sea el caso
-        user.role_id = req.body.role_id;
-        user.save().then(() => {
+        User.update(
+          { role_id: req.body.role_id },
+          { where: { id: user_id }, returning: true }
+        ).then(() => {
           res.status(201).send("Successful operation!");
         });
       })
@@ -306,18 +309,28 @@ class UsersController {
   }
 
   static deleteUser(req, res) {
-    User.destroy({
-      where: { id: req.params.id },
-    })
+    User.findByPk(req.params.id)
       .then((user) => {
-        if (!user) return res.sendStatus(404);
-        return res.sendStatus(202);
+        if (user.role_id === "super admin") {
+          return res.status(401).send("Unauthorized");
+        } else {
+          return User.destroy({
+            where: { id: req.params.id },
+          }).then((result) => {
+            if (result === 0) {
+              return res.status(404).send("Not found");
+            } else {
+              return res.status(202).send("Successful operation!");
+            }
+          });
+        }
       })
       .catch((error) => {
         console.error("Error when trying to delete user:", error);
         return res.status(500).send("Internal Server Error");
       });
   }
+
   static registerOperator(req, res) {
     const { full_name, dni, email, password, branch_office_id, phone_number } =
       req.body;

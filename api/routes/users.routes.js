@@ -1,8 +1,10 @@
 const express = require("express");
 const UsersController = require("../controllers/users.controllers");
 const { validateAuth } = require("../middlewares/validateAuth");
-const {validateAuthSuperAdmin} = require("../middlewares/validateAuthSuperAdmin");
-const {validateAuthAdmin} = require("../middlewares/validateAuthAdmin");
+const {
+  validateAuthSuperAdmin,
+} = require("../middlewares/validateAuthSuperAdmin");
+const { validateAuthAdmin } = require("../middlewares/validateAuthAdmin");
 const router = express.Router();
 
 router.post("/register", UsersController.register);
@@ -20,13 +22,21 @@ router.put("/restore-password", UsersController.sendEmail);
 router.put("/confirm-email/:token", UsersController.confirmEmail);
 
 //Con permisos admin y super admin
-router.post("/register-operator",validateAuthAdmin, UsersController.registerOperator);
-router.get("/", validateAuthAdmin,UsersController.getAllUsers);
-router.get("/operators", validateAuthAdmin,UsersController.getOperators);
+router.post(
+  "/register-operator",
+  validateAuthAdmin,
+  UsersController.registerOperator
+);
+router.get("/", validateAuthAdmin, UsersController.getAllUsers);
+router.get("/operators", validateAuthAdmin, UsersController.getOperators);
+/* Para eliminar un usuario hay que tomar en cuenta la restricción de llave foránea; y en la lógica del método deleteUser no va permitir que se pueda eliminar un super admin*/
+router.delete("/:id", validateAuthAdmin, UsersController.deleteUser);
 
 //Con permiso super admin
-router.put("/change-role/:user_id", validateAuthSuperAdmin, UsersController.changeRole);
-/* Para eliminar un usuario hay que tomar en cuenta la restricción de llave foránea */
-router.delete("/:id", validateAuthSuperAdmin, UsersController.deleteUser);
+router.put(
+  "/change-role/:user_id",
+  validateAuthSuperAdmin,
+  UsersController.changeRole
+);
 
 module.exports = router;
