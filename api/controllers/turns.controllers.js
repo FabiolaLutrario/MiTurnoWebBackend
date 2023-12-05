@@ -72,10 +72,28 @@ class TurnsController {
         User.findByPk(req.params.user_id).then((user) => {
           BranchOffice.findByPk(req.body.branch_office_id).then(
             (branch_office) => {
+              const closingTime = branch_office.closing_time;
+
+              // Crear un objeto Date con la hora original
+              const originalTime = new Date(`2000-01-01T${closingTime}`);
+
+              // Restar 15 minutos
+              originalTime.setMinutes(originalTime.getMinutes() - 15);
+
+              // Obtener la nueva hora y minutos
+              const newHour = originalTime.getHours();
+              const newMinutes = originalTime.getMinutes();
+
+              // Formatear la nueva hora y minutos en el string deseado
+              const adjustedClosingTime = `${String(newHour).padStart(
+                2,
+                "0"
+              )}:${String(newMinutes).padStart(2, "0")}:00`;
+
               if (
                 !(
                   horary_id >= branch_office.opening_time &&
-                  horary_id <= branch_office.closing_time
+                  horary_id <= adjustedClosingTime
                 )
               ) {
                 return res
