@@ -175,6 +175,46 @@ class UsersController {
       });
   }
 
+  static editProfileFromAdmin(req, res) {
+    const id = req.params.user_id;
+    const { full_name, dni, phone_number, role_id, branch_office_id } =
+      req.body;
+
+    if (!full_name || !dni || !role_id || !phone_number || !branch_office_id) {
+      return res.status(400).send({ error: "All fields are required!" });
+    }
+
+    User.findByPk(id).then((user) => {
+      console.log(user);
+      if (user.role_id === "super admin") {
+        return res
+          .status(401)
+          .send("You cannot revoke permissions from a super administrator");
+      }
+    });
+
+    User.update(req.body, { where: { id }, returning: true })
+      .then(([rows, users]) => {
+        const user = users[0];
+
+        const payload = {
+          id: user.id,
+          full_name: user.full_name,
+          dni: user.dni,
+          email: user.email,
+          phone_number: user.phone_number,
+          role_id: user.role_id,
+          branch_office_id: user.branch_office_id,
+        };
+
+        res.status(200).send(payload);
+      })
+      .catch((error) => {
+        console.error("Error when trying to update user:", error);
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+
   static sendEmail(req, res) {
     const email = req.body.email;
 

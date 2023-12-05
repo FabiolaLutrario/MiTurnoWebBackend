@@ -58,55 +58,67 @@ class TurnsController {
         .send({ error: "The selected date is before the current date" });
     }
 
-    /* A continuación va a buscar el user por id, cuando lo encuentre va a buscar la  branchOffice por id,
-    y cuando la encuentre va a verificar si aún hay turno disponible para la fecha y hora seleccionadas; cuando pase esas validaciones va a crear el turno*/
-    User.findByPk(req.params.user_id)
-      .then((user) => {
-        BranchOffice.findByPk(req.body.branch_office_id).then(
-          (branch_office) => {
-            Turn.checkTurns(turn_date, horary_id, branch_office.id).then(
-              (turns) => {
-                if (turns.length >= branch_office.boxes)
-                  return res
-                    .status(400)
-                    .send(
-                      "The turn on the selected day and time is no longer available."
-                    );
-                Turn.create({
-                  turn_date,
-                  full_name,
-                  phone_number,
-                  horary_id,
-                  confirmation_id: "pending",
-                  reservation_date: currentDate,
-                  reservation_time: currentTime,
-                  branch_office_id,
-                  user_id: user.id,
-                }).then((turn) => {
-                  const info = transporter.sendMail({
-                    from: '"Confirmación de turno" <turnoweb.mailing@gmail.com>',
-                    to: user.email,
-                    subject: "Confirmación de turno ✔",
-                    html: `<p>Hola ${
-                      user.full_name
-                    }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
-                      turn.turn_date
-                    } a las ${turn.horary_id.slice(
-                      0,
-                      5
-                    )} fue reservado satisfactoriamente. Te esperamos en nuestra sucursal de ${
-                      branch_office.name
-                    }.
-                  Muchas gracias por confiar en nosotros!</p>`,
+    /** Verifica si el usuario está intentando sacar más de un turno el mismo día. */
+    Turn.findAll({
+      where: {
+        user_id: req.params.user_id,
+        turn_date,
+      },
+    })
+      .then((turns) => {
+        console.log("Turnos obtenidos: ", turns);
+        if (turns.length)
+          return res
+            .status(409)
+            .send("You cannot book more than one turn on the same day.");
+        /* A continuación va a buscar el user por id, cuando lo encuentre va a buscar la  branchOffice por id,y cuando la encuentre va a verificar si aún hay turno disponible para la fecha y hora seleccionadas; cuando pase esas validaciones va a crear el turno*/
+        User.findByPk(req.params.user_id).then((user) => {
+          BranchOffice.findByPk(req.body.branch_office_id).then(
+            (branch_office) => {
+              Turn.checkTurns(turn_date, horary_id, branch_office.id).then(
+                (turns) => {
+                  if (turns.length >= branch_office.boxes)
+                    return res
+                      .status(400)
+                      .send(
+                        "The turn on the selected day and time is no longer available."
+                      );
+                  Turn.create({
+                    turn_date,
+                    full_name,
+                    phone_number,
+                    horary_id,
+                    confirmation_id: "pending",
+                    reservation_date: currentDate,
+                    reservation_time: currentTime,
+                    branch_office_id,
+                    user_id: user.id,
+                  }).then((turn) => {
+                    const info = transporter.sendMail({
+                      from: '"Confirmación de turno" <turnoweb.mailing@gmail.com>',
+                      to: user.email,
+                      subject: "Confirmación de turno ✔",
+                      html: `<p>Hola ${
+                        user.full_name
+                      }! Nos comunicamos de "Mi Turno Web" para confirmar que tu turno del ${
+                        turn.turn_date
+                      } a las ${turn.horary_id.slice(
+                        0,
+                        5
+                      )} fue reservado satisfactoriamente. Te esperamos en nuestra sucursal de ${
+                        branch_office.name
+                      }.
+                Muchas gracias por confiar en nosotros!</p>`,
+                    });
+                    info.then(() => {
+                      res.status(201).send(turn);
+                    });
                   });
-                  info.then(() => {
-                    res.status(201).send(turn);
-                  });
-                });
-              }
-            );
-          }
-        );
+                }
+              );
+            }
+          );
+        });
       })
       .catch((error) => {
         console.error("Error when trying to generate turn:", error);
