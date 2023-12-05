@@ -4,7 +4,7 @@ const User = require("../models/User.models");
 const BranchOffice = require("../models/BranchOffice.models");
 const ReasonCancellation = require("../models/ReasonCancellation.models");
 const moment = require("moment");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 
 class TurnsController {
   static generateTurn(req, res) {
@@ -243,6 +243,54 @@ class TurnsController {
       .catch((err) => {
         res.status(500).send(err);
       });
+  }
+  static dashboardGeneral(req, res) {
+    const branch_office_id = req.params.branchId;
+    let info = {};
+    Turn.count({ where: { branch_office_id } })
+      .then((count) => {
+        info.total = count;
+        Turn.count({
+          where: { branch_office_id, confirmation_id: "cancelled" },
+        }).then((countCancel) => {
+          info.total_cancelled = countCancel;
+          Turn.count({
+            where: { branch_office_id, confirmation_id: "confirmed" },
+          }).then((countConfirm) => {
+            info.total_confirmed = countConfirm;
+            Turn.count({
+              where: { branch_office_id, confirmation_id: "absence" },
+            }).then((countAbsence) => {
+              info.total_absence = countAbsence;
+              Turn.count({
+                where: { branch_office_id, confirmation_id: "pending" },
+              }).then((countPending) => {
+                info.total_pending = countPending;
+                res.status(200).send(info);
+              });
+            });
+          });
+        });
+      })
+      .catch((err) => res.status(500).send(err));
+  }
+  static dashboardInAdvance(req, res) {
+    const branch_office_id = req.params.branchId;
+    let info = {
+      advance_count: 0,
+    };
+    Turn.findAll({ where: { branch_office_id } })
+      .then((turns) => {
+        turns.map((turn) => {
+          let advanceDate = moment(turn.turn_date);
+          advanceDate = advanceDate.subtract(1, "w");
+          if (moment(turn.reservation_date).isBefore(advanceDate)) {
+            info.advance_count++;
+          }
+        });
+        res.status(200).send(info);
+      })
+      .catch((err) => res.status(500).send(err));
   }
 }
 module.exports = TurnsController;
