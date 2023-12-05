@@ -25,6 +25,7 @@ Confirmation.sync()
         { id: "pending" },
         { id: "confirmed" },
         { id: "cancelled" },
+        { id: "absence" },
       ];
       return Confirmation.bulkCreate(confirmationsToCreate);
     }
