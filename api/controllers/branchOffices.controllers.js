@@ -87,7 +87,9 @@ class BranchOfficesController {
       })
       .catch((error) => {
         console.error("Error when trying to delete branch office:", error);
-        return res.status(500).send("Internal Server Error");
+        if (error.name === "SequelizeForeignKeyConstraintError")
+          return res.status(409).send(error);
+        return res.status(500).send(error);
       });
   }
   static async unavailableDays(req, res) {
