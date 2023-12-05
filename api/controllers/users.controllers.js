@@ -14,6 +14,12 @@ class UsersController {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
+    User.findOne({ where: { dni } }).then((existingUser) => {
+      if (existingUser) {
+        return res.status(409).send("DNI already exists");
+      }
+    });
+
     const payload = {
       full_name,
       email: email,
@@ -385,6 +391,12 @@ class UsersController {
     ) {
       return res.status(400).send({ error: "All fields are required!" });
     }
+
+    User.findOne({ where: { dni } }).then((existingUser) => {
+      if (existingUser) {
+        return res.status(409).send("DNI already exists");
+      }
+    });
 
     const payload = {
       full_name,
