@@ -11,7 +11,7 @@ class TurnsController {
     const currentDate = moment();
     const currentTime = moment().format("HH:mm:ss");
     const { turn_date, horary_id, branch_office_id, full_name, phone_number } =
-      req.body; //Desde el front estará el select en donde en cada option del select se mostrará {branchOffice.name} pero al seleccionar una option el value será branchOffice.id
+      req.body;
 
     if (
       !turn_date ||
@@ -58,7 +58,6 @@ class TurnsController {
         .send({ error: "The selected date is before the current date" });
     }
 
-    /** Verifica si el usuario está intentando sacar más de un turno el mismo día. */
     Turn.findAll({
       where: {
         user_id: req.params.user_id,
@@ -66,15 +65,23 @@ class TurnsController {
       },
     })
       .then((turns) => {
-        console.log("Turnos obtenidos: ", turns.length);
         if (turns.length && turns.length >= 3)
           return res
             .status(409)
-            .send("You cannot book more than one turn on the same day.");
-        /* A continuación va a buscar el user por id, cuando lo encuentre va a buscar la  branchOffice por id,y cuando la encuentre va a verificar si aún hay turno disponible para la fecha y hora seleccionadas; cuando pase esas validaciones va a crear el turno*/
+            .send("You cannot book more than three turn on the same day.");
         User.findByPk(req.params.user_id).then((user) => {
           BranchOffice.findByPk(req.body.branch_office_id).then(
             (branch_office) => {
+              if (
+                !(
+                  horary_id >= branch_office.opening_time &&
+                  horary_id <= branch_office.closing_time
+                )
+              ) {
+                return res
+                  .status(400)
+                  .send("The turn date is outside branch office hours.");
+              }
               Turn.checkTurns(turn_date, horary_id, branch_office.id).then(
                 (turns) => {
                   if (turns.length >= branch_office.boxes)
