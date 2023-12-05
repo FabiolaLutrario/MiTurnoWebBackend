@@ -66,8 +66,8 @@ class TurnsController {
       },
     })
       .then((turns) => {
-        console.log("Turnos obtenidos: ", turns);
-        if (turns.length)
+        console.log("Turnos obtenidos: ", turns.length);
+        if (turns.length && turns.length >= 3)
           return res
             .status(409)
             .send("You cannot book more than one turn on the same day.");
