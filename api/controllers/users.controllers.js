@@ -14,46 +14,45 @@ class UsersController {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
-    User.findOne({ where: { dni } }).then((existingUser) => {
-      if (existingUser) {
-        return res.status(409).send("DNI already exists");
-      }
-    });
+    User.findOne({ where: { dni } })
+      .then((existingUser) => {
+        if (existingUser) {
+          return res.status(409).send("DNI already exists");
+        }
+        const payload = {
+          full_name,
+          email: email,
+          dni: dni,
+          phone_number,
+          role_id: "customer",
+        };
 
-    const payload = {
-      full_name,
-      email: email,
-      dni: dni,
-      phone_number,
-      role_id: "customer",
-    };
+        const token = generateToken(payload, "10d");
 
-    const token = generateToken(payload, "10d");
+        User.findOrCreate({
+          where: { email },
+          defaults: {
+            full_name,
+            dni,
+            password,
+            token: token,
+            phone_number,
+            role_id: "customer",
+          },
+        }).then((users) => {
+          if (!users[1]) return res.status(409).send("Email already exists");
 
-    User.findOrCreate({
-      where: { email },
-      defaults: {
-        full_name,
-        dni,
-        password,
-        token: token,
-        phone_number,
-        role_id: "customer",
-      },
-    })
-      .then((users) => {
-        if (!users[1]) return res.status(409).send("Email already exists");
-
-        //Genera el link de confirmación de cuenta y lo envía por correo
-        const confirmURL = `http://localhost:3000/confirm-email/${token}`;
-        const info = transporter.sendMail({
-          from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
-          to: users[0].email,
-          subject: "Confirmación de correo ✔",
-          html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
-        });
-        info.then(() => {
-          res.status(201).send(payload);
+          //Genera el link de confirmación de cuenta y lo envía por correo
+          const confirmURL = `http://localhost:3000/confirm-email/${token}`;
+          const info = transporter.sendMail({
+            from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
+            to: users[0].email,
+            subject: "Confirmación de correo ✔",
+            html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
+          });
+          info.then(() => {
+            res.status(201).send(payload);
+          });
         });
       })
       .catch((error) => {
@@ -392,48 +391,48 @@ class UsersController {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
-    User.findOne({ where: { dni } }).then((existingUser) => {
-      if (existingUser) {
-        return res.status(409).send("DNI already exists");
-      }
-    });
+    User.findOne({ where: { dni } })
+      .then((existingUser) => {
+        if (existingUser) {
+          return res.status(409).send("DNI already exists");
+        }
+        const payload = {
+          full_name,
+          email,
+          dni,
+          phone_number,
+          role_id: "operator",
+          branch_office_id,
+        };
 
-    const payload = {
-      full_name,
-      email,
-      dni,
-      phone_number,
-      role_id: "operator",
-      branch_office_id,
-    };
+        const token = generateToken(payload, "10d");
 
-    const token = generateToken(payload, "10d");
+        User.findOrCreate({
+          where: { email },
+          defaults: {
+            full_name,
+            dni,
+            password,
+            token: token,
+            phone_number,
+            branch_office_id,
+            role_id: "operator",
+          },
+        }).then((operators) => {
+          if (!operators[1])
+            return res.status(409).send("Email already exists");
 
-    User.findOrCreate({
-      where: { email },
-      defaults: {
-        full_name,
-        dni,
-        password,
-        token: token,
-        phone_number,
-        branch_office_id,
-        role_id: "operator",
-      },
-    })
-      .then((operators) => {
-        if (!operators[1]) return res.status(409).send("Email already exists.");
-
-        //Genera el link de recuperación de contraseña y lo envía por correo
-        const confirmURL = `http://localhost:3000/confirm-email/${token}`;
-        const info = transporter.sendMail({
-          from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
-          to: operators[0].email,
-          subject: "Confirmación de correo ✔",
-          html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
-        });
-        info.then(() => {
-          res.status(201).send(payload);
+          //Genera el link de recuperación de contraseña y lo envía por correo
+          const confirmURL = `http://localhost:3000/confirm-email/${token}`;
+          const info = transporter.sendMail({
+            from: '"Confirmación de correo electrónico" <turnoweb.mailing@gmail.com>',
+            to: operators[0].email,
+            subject: "Confirmación de correo ✔",
+            html: `<b>Por favor haz click en el siguiente link, o copia el enlace y pegalo en tu navegador para confirmar tu correo:</b><a href="${confirmURL}">${confirmURL}</a>`,
+          });
+          info.then(() => {
+            res.status(201).send(payload);
+          });
         });
       })
       .catch((error) => {
