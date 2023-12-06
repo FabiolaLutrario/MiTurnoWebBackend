@@ -18,16 +18,28 @@ class BranchOfficesController {
         .status(400)
         .send({ error: "Todos los campos son obligatorios" });
     }
-    BranchOffice.create({
-      name,
-      boxes,
-      email,
-      phone_number,
-      opening_time,
-      closing_time,
-    })
-      .then((branch_office) => {
-        res.status(201).send(branch_office);
+
+    BranchOffice.findOne({ where: { name } })
+      .then((existingBranchOffice) => {
+        if (existingBranchOffice) {
+          return res.status(409).send("Name branch office already exists");
+        }
+
+        BranchOffice.findOrCreate({
+          where: { email },
+          defaults: {
+            name,
+            boxes,
+            email,
+            phone_number,
+            opening_time,
+            closing_time,
+          },
+        }).then((branchOffices) => {
+          if (!branchOffices[1])
+            return res.status(409).send("Email already exists");
+          res.status(201).send(branchOffices[0]);
+        });
       })
       .catch((error) => {
         console.error("Error when trying to create branch office:", error);
