@@ -299,84 +299,84 @@ class TurnsController {
       0: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       1: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       2: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       3: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       4: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       5: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       6: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       7: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       8: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       9: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       10: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
       11: {
         pending: 0,
         absence: 0,
-        completed: 0,
+        total: 0,
         cancelled: 0,
         confirmed: 0,
       },
@@ -386,6 +386,7 @@ class TurnsController {
       turns.map((turn) => {
         if (moment(turn.turn_date).year() === currentDate.year()) {
           info[moment(turn.turn_date).month()][turn.confirmation_id]++;
+          info[moment(turn.turn_date).month()].total++;
         }
       });
       res.status(200).send(info);
