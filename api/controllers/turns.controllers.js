@@ -329,5 +329,92 @@ class TurnsController {
       })
       .catch((err) => res.status(500).send(err));
   }
+  static dashboardByTime(req, res) {
+    const branch_office_id = req.params.branchId;
+    const { filter } = req.body;
+    let info = {
+      0: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      1: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      2: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      3: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      4: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      5: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      6: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      7: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      8: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      9: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      10: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+      11: {
+        pending: 0,
+        absence: 0,
+        completed: 0,
+        cancelled: 0,
+      },
+    };
+    let currentDate = moment();
+    Turn.findAll({ where: { branch_office_id } }).then((turns) => {
+      turns.map((turn) => {
+        if (moment(turn.turn_date).year() === currentDate.year()) {
+          info[moment(turn.turn_date).month()][turn.confirmation_id]++;
+        }
+      });
+      res.status(200).send(info);
+    });
+  }
 }
 module.exports = TurnsController;
