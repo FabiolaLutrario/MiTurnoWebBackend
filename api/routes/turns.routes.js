@@ -26,6 +26,11 @@ router.get(
   validateAuthAdmin,
   TurnsController.dashboardInAdvance
 );
+router.get(
+  "/dashboard-by-time/:branchId",
+  validateAuthAdmin,
+  TurnsController.dashboardByTime
+);
 
 //Con permisos operator, admin y super admin
 router.get(
