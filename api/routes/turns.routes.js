@@ -17,6 +17,11 @@ router.put("/cancel-turn/:id", validateAuth, TurnsController.cancelTurn);
 //Con permisos admin y super admin
 router.get("/", validateAuthAdmin, TurnsController.all);
 router.get(
+  "/by-confirmation/:confirmation_id",
+  validateAuthAdmin,
+  TurnsController.getAllTurnsByConfirmation
+);
+router.get(
   "/dashboard-general/:branchId",
   validateAuthAdmin,
   TurnsController.dashboardGeneral
