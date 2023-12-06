@@ -212,11 +212,8 @@ class TurnsController {
 
   static confirmTurn(req, res) {
     const { id } = req.params;
-
-    Turn.update(
-      { confirmation_id: "confirmed" },
-      { where: { id }, returning: true }
-    )
+    const { confirmation_id } = req.body;
+    Turn.update({ confirmation_id }, { where: { id }, returning: true })
       .then(([rows, turns]) => {
         res.status(200).send(turns[0]);
       })
