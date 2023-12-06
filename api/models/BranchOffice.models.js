@@ -51,7 +51,7 @@ BranchOffice.sync()
         },
         {
           name: "San Miguel",
-          email: "juanarismendidiaz@gmail.com",
+          email: "juan_arismendi025@gmail.com",
           phone_number: "3814888082",
           boxes: 4,
           opening_time: "07:30",
