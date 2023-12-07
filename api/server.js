@@ -41,4 +41,3 @@ db.sync({ force: false }).then(() => {
   app.listen(5001, () => console.log(`Servidor  en el puerto 5001`));
 });
 module.exports = app;
-yy - mm - dd;
