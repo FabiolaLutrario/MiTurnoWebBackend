@@ -5,6 +5,7 @@ const { transporter } = require("../config/mailer.config");
 const User = require("../models/User.models");
 const Role = require("../models/Role.models");
 const { Turn, BranchOffice } = require("../models/index.models");
+const { Op } = require("sequelize");
 
 class UsersController {
   static register(req, res) {
@@ -147,32 +148,48 @@ class UsersController {
       return res.status(400).send({ error: "All fields are required!" });
     }
 
-    User.update(req.body, { where: { id }, returning: true })
-      .then(([rows, users]) => {
-        const user = users[0];
+    User.findOne({
+      where: {
+        dni,
+        id: {
+          [Op.ne]: id,
+        },
+      },
+    })
+      .then((existingUser) => {
+        if (existingUser) {
+          return res.status(409).send("DNI already exists");
+        }
+        User.update(req.body, { where: { id }, returning: true }).then(
+          ([rows, users]) => {
+            const user = users[0];
 
-        if (user.role_id === "operator" && !branch_office_id)
-          return res.status(400).send({ error: "All fields are required!" });
+            if (user.role_id === "operator" && !branch_office_id)
+              return res
+                .status(400)
+                .send({ error: "All fields are required!" });
 
-        const payload = {
-          id: user.id,
-          full_name: user.full_name,
-          dni: user.dni,
-          email: user.email,
-          phone_number: user.phone_number,
-          role_id: user.role_id,
-          branch_office_id: user.branch_office_id,
-        };
+            const payload = {
+              id: user.id,
+              full_name: user.full_name,
+              dni: user.dni,
+              email: user.email,
+              phone_number: user.phone_number,
+              role_id: user.role_id,
+              branch_office_id: user.branch_office_id,
+            };
 
-        const token = generateToken(payload, "1d");
+            const token = generateToken(payload, "1d");
 
-        res.cookie("token", token, {
-          sameSite: "none",
-          httpOnly: true,
-          secure: true,
-        });
+            res.cookie("token", token, {
+              sameSite: "none",
+              httpOnly: true,
+              secure: true,
+            });
 
-        res.status(200).send(payload);
+            res.status(200).send(payload);
+          }
+        );
       })
       .catch((error) => {
         console.error("Error when trying to update user:", error);
@@ -190,7 +207,6 @@ class UsersController {
     }
 
     User.findByPk(id).then((user) => {
-      console.log(user);
       if (user.role_id === "super admin") {
         return res
           .status(401)
@@ -198,21 +214,36 @@ class UsersController {
       }
     });
 
-    User.update(req.body, { where: { id }, returning: true })
-      .then(([rows, users]) => {
-        const user = users[0];
+    User.findOne({
+      where: {
+        dni,
+        id: {
+          [Op.ne]: id,
+        },
+      },
+    })
+      .then((existingUser) => {
+        if (existingUser) {
+          return res.status(409).send("DNI already exists");
+        }
 
-        const payload = {
-          id: user.id,
-          full_name: user.full_name,
-          dni: user.dni,
-          email: user.email,
-          phone_number: user.phone_number,
-          role_id: user.role_id,
-          branch_office_id: user.branch_office_id,
-        };
+        User.update(req.body, { where: { id }, returning: true }).then(
+          ([rows, users]) => {
+            const user = users[0];
 
-        res.status(200).send(payload);
+            const payload = {
+              id: user.id,
+              full_name: user.full_name,
+              dni: user.dni,
+              email: user.email,
+              phone_number: user.phone_number,
+              role_id: user.role_id,
+              branch_office_id: user.branch_office_id,
+            };
+
+            res.status(200).send(payload);
+          }
+        );
       })
       .catch((error) => {
         console.error("Error when trying to update user:", error);

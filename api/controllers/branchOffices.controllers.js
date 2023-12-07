@@ -1,6 +1,7 @@
 const { BranchOffice, Turn } = require("../models/index.models");
 const moment = require("moment");
 const daysTester = require("../utils/daysTester");
+const { Op } = require("sequelize");
 
 class BranchOfficesController {
   static create(req, res) {
@@ -82,9 +83,25 @@ class BranchOfficesController {
     ) {
       return res.status(400).send({ error: "All fields are required!" });
     }
-    BranchOffice.update(req.body, { where: { id }, returning: true })
-      .then(([rows, branch_offices]) => {
-        res.status(200).send(branch_offices[0]);
+
+    BranchOffice.findOne({
+      where: {
+        name,
+        id: {
+          [Op.ne]: id,
+        },
+      },
+    })
+      .then((existingBranchOffice) => {
+        if (existingBranchOffice) {
+          return res.status(409).send("Name branch office already exists");
+        }
+
+        BranchOffice.update(req.body, { where: { id }, returning: true }).then(
+          ([rows, branch_offices]) => {
+            res.status(200).send(branch_offices[0]);
+          }
+        );
       })
       .catch((error) => {
         console.error("Error when trying to update branch office:", error);
