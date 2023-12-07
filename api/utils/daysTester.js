@@ -1,10 +1,10 @@
 const moment = require("moment");
 const Turn = require("../models/Turn.models");
 
+const meses31dias = ["01", "03", "05", "07", "08", "10", "12"];
+const meses30dias = ["04", "06", "09", "11"];
 class daysTester {
   static createDays() {
-    const meses31dias = ["01", "03", "05", "07", "08", "10", "12"];
-    const meses30dias = ["04", "06", "09", "11"];
     const testDays = [];
     let date = moment().add(1, "days").toISOString().slice(0, 10);
     let year = parseInt(date.slice(0, 4));
@@ -65,7 +65,36 @@ class daysTester {
       await Turn.findAll({
         where: { turn_date: day, branch_office_id: branch.id },
       }).then((turns) => {
-        if (turns.length >= maxTurns) unavailableDays.push(new Date(day));
+        if (turns.length >= maxTurns) {
+          let [year, month, newDay] = day.split("-");
+
+          newDay++;
+          if (meses31dias.includes(month)) {
+            if (day === 31) {
+              if (month === 12) {
+                month = 1;
+                year++;
+              } else {
+                month++;
+                day = 1;
+              }
+            }
+          } else if (meses30dias.includes(month)) {
+            if (day === 30) {
+              month++;
+              day = 1;
+            }
+          } else {
+            if (day === 29 && year === 2024) {
+              month++;
+              day = 1;
+            } else if (day === 28 && year !== 2024) {
+              month++;
+              day = 1;
+            }
+          }
+          unavailableDays.push(new Date(`${year}-${month}-${newDay}`));
+        }
       });
     }
     return unavailableDays;
