@@ -62,6 +62,7 @@ class TurnsController {
       where: {
         user_id: req.params.user_id,
         turn_date,
+        confirmation_id: "pending",
       },
     })
       .then((turns) => {

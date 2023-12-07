@@ -6,11 +6,11 @@ const meses30dias = ["04", "06", "09", "11"];
 class daysTester {
   static createDays() {
     const testDays = [];
-    let date = moment().add(1, "days").toISOString().slice(0, 10);
+    let date = moment().subtract(2, "days").toISOString().slice(0, 10);
     let year = parseInt(date.slice(0, 4));
     let month = parseInt(date.slice(5, 7));
     let day = parseInt(date.slice(8, 10));
-    for (let i = 0; i <= 31; i++) {
+    for (let i = 0; i <= 40; i++) {
       let dateString = `${year}-${month}-${day}`;
       testDays.push(dateString);
       if (meses31dias.includes(`${month < 10 ? `0${month}` : month}`)) {
@@ -63,7 +63,11 @@ class daysTester {
     let unavailableDays = [];
     for (const day of daysArray) {
       await Turn.findAll({
-        where: { turn_date: day, branch_office_id: branch.id },
+        where: {
+          turn_date: day,
+          branch_office_id: branch.id,
+          confirmation_id: "pending",
+        },
       }).then((turns) => {
         if (turns.length >= maxTurns) {
           let [year, month, newDay] = day.split("-");
