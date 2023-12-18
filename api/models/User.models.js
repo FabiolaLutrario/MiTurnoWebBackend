@@ -99,25 +99,7 @@ User.sync()
           dni: "12345678",
           confirmation: true,
           phone_number: "2231234567",
-        },
-        {
-          full_name: "Juan Arismendi",
-          email: "juan_arismendi025@outlook.es",
-          password: "Chicho01",
-          role_id: "customer",
-          dni: "43771262",
-          confirmation: true,
-          phone_number: "3814888082",
-        },
-        {
-          full_name: "Lucas Riquelme",
-          email: "lucasriquelme@hotmail.com.ar",
-          password: "Chicho01",
-          role_id: "customer",
-          dni: "461357951",
-          confirmation: true,
-          phone_number: "945462161",
-        },
+        }
       ];
 
       // Aplicar hashing de la contraseña manualmente
